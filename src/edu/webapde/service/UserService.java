@@ -14,6 +14,11 @@ public class UserService {
 		
 		EntityTransaction trans = em.getTransaction();
 		
+		// if the username already exist in the DB
+		if(isUserFound(u.getUsername())) {
+			System.out.println("BAKIT KA NANDITO");
+			return false;
+		}
 		try {
 			trans.begin();
 			em.persist(u);
@@ -42,8 +47,16 @@ public class UserService {
 			trans.begin();
 			u = em.find(User.class, username);
 			trans.commit();
-			if(u.getPassword().equals(password))
+			
+			if(u == null)
 				return u;
+			
+			// check if the password is equal
+			if(u.isPasswordEqual(password))
+				return u;
+			else
+				System.err.println("ERROR: Password does not match!");
+				// System.out.println("ERROR: Password does not match!");
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -52,5 +65,41 @@ public class UserService {
 		}
 		
 		return null;
+	}
+	
+	public static boolean isUserFound(String username) {
+		User u = null;
+		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
+		EntityManager em = emf.createEntityManager();
+		
+		EntityTransaction trans = em.getTransaction();
+		
+		try {
+			trans.begin();
+			u = em.find(User.class, username);
+			trans.commit();
+			
+			// if the user is found
+			if(u != null)
+				return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+		
+		return false;
+	}
+	
+	public static void main(String[] args) {
+		User u = new User("helloKitty", "Hay");
+		if(addUser(u))
+			System.out.println(u.toString());
+		else
+			System.out.println("ERROR");
+		
+		//System.out.println(getUser("helloKitty", "Hay"));
 	}
 }
