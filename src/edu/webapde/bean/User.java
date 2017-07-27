@@ -19,7 +19,7 @@ public class User {
 		// TODO Auto-generated constructor stub
 		this.username = null;
 		this.password = null;
-		this.description = null;
+		this.description = "";
 	}
 	
 	public User(String username, char[] password) {
@@ -86,7 +86,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", password=" + Arrays.toString(password) + ", description=" + description + "]";
+		return "{'username':'" + username + "', 'password':'" + Arrays.toString(password) + "', 'description':'" + description + "'}";
 	}
 	
 }
