@@ -57,40 +57,17 @@
             }
 
             function getPhotos(){
-            	/*
-                $.ajax({
-                    url: root + '/photos/'
-                    , method: 'GET'
-                }).then(function (photos) {
-                    for (i = photos.length - photos_cnt - 1; i > photos.length - photos_cnt - numViewPhoto - 1 && i >= 0; i--) {
-                        showPhoto(photos[i]);
-                        console.log(photos[i].id);
-                    }
-                    photos_cnt = photos_cnt + numViewPhoto;
-                    if (photos_cnt >= photos.length) {
-                        $("#viewmore").hide();
-                    }
-                });
-            	*/
-            	pList = ${pList};/*
-            	var i = 0;
-				for (i = 0; i < ${pListSize}; i++) {
-	        		var p = ${pList[i]};
-					var photo = new Photo(${p.username}, ${p.title}, ${p.description}, ${p.filepath}, ${p.privacy}, ${p.date}, ${p.tags}, ${p.allowedUsers});
-	        		pList.push(photo);
-				}*/
-				//<c:forEach var="p" items="${pList}" >
-				//  var photo = ${p};
-				//  pList.push(photo);
-				//</c:forEach>
+            	
+            	publicPhotoList = ${publicPhotoList};
+            	
 				var i;
 				var limit = photos_cnt + numViewPhoto;
-            	for(i = photos_cnt; i < pList.length && i < limit; i++) {
-            		showPhoto(pList[i]);
+            	for(i = photos_cnt; i < publicPhotoList.length && i < limit; i++) {
+            		showPhoto(publicPhotoList[i]);
             		photos_cnt++;
             	}
             	
-                if (photos_cnt >= pList.length) {
+                if (photos_cnt >= publicPhotoList.length) {
                     $("#viewmore").hide();
                 }
             }
@@ -107,9 +84,9 @@
             }
             
             function showImgModal() {
-            	pList = ${pList};
+            	publicPhotoList = ${publicPhotoList};
             	var id = parseInt(window.location.hash.slice(1));
-            	p = findPhoto(pList, id);
+            	p = findPhoto(publicPhotoList, id);
             	console.log(parseInt(window.location.hash.slice(1)) - 1)
                 console.log("show the modal thing");
                 //console.log($(this).data());
@@ -182,8 +159,36 @@
             }
 
             $(document).ready(function () {
-                getPhotos();
-
+            	var role = "${role}";
+            	console.log(role);
+            	if(role == "user") {
+            		console.log("I AM AN USER")
+            		console.log("${sessionScope.sUsername} ");
+                	getPhotos();
+                	var username = "${sessionScope.sUsername} ";
+                	var description = "${sessionScope.sDescription} ";
+                	// you can hide the log in and register and show logout and account
+                	
+                	// you can show the section for private photos
+            	}
+            	// if login failed
+            	else if("${ERROR}" == "failed") {
+            		console.log("I AM STILL A GUEST")
+            		console.log("FAILED");
+                	getPhotos();
+                	
+                	// continue to show the modal of login but add a div inside to state that the username or password is incorrect
+                	
+            	}
+            	else {
+            		console.log("I AM A GUEST")
+            		console.log("${sessionScope.sUsername} ");
+                	getPhotos();
+                	
+                	// show what is needed
+                	
+                	// hide what is needed
+            	}
                 // if address has non-empty hash, show equivalent modal
                 // if(window.location.hash.slice(1) != "") {
                 //     showImgModal();
@@ -316,9 +321,10 @@
                         <div id="modal-login-container-2">
                             <div id="modal-login-content">
                                 <h3>Log in</h3>
-                                <form action="">
-                                    <input type="text" name="username" placeholder="Username"><br>
-                                    <input type="password" name="lastname" placeholder="Password"><br>
+                                <form action="login" method="POST">
+                                    <input type="text" name="username" placeholder="Username" /><br>
+                                    <input type="password" name="password" placeholder="Password" /><br>
+                                    <input type="checkbox" name="remember" value="remember" /> Remember Me<br>
                                     <input type="submit" value="Log in">
                                 </form>
                             </div>
@@ -334,10 +340,10 @@
                         <div id="modal-reg-container-2">
                             <div id="modal-reg-content">
                                 <h3>Log in</h3>
-                                <form action="">
-                                    <input type="text" name="username" placeholder="Username"><br>
-                                    <input type="text" name="lastname" placeholder="Password"><br>
-                                    <input type="submit" value="Log in">
+                                <form action="login" method="POST">
+                                    <input type="text" name="username" placeholder="Username" /><br>
+                                    <input type="text" name="password" placeholder="Password" /><br>
+                                    <input type="submit" value="Log in" />
                                 </form>
                             </div>
                         </div>
