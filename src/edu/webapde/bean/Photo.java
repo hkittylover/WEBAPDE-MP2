@@ -3,27 +3,29 @@ package edu.webapde.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 
-@Entity(name="photo")
-@SecondaryTables({
-    @SecondaryTable(name="userphoto", foreignKey=@ForeignKey(name="photoId"))
-})
+@Entity(name = "photo")
+@SecondaryTables({ @SecondaryTable(name = "userphoto", foreignKey = @ForeignKey(name = "photoId")) })
 public class Photo {
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int photoId;
-	@Column(table="userphoto")
+	@Column(table = "userphoto")
 	private String username;
 	@Column
 	private String title;
@@ -33,15 +35,23 @@ public class Photo {
 	private String filepath;
 	@Column
 	private String privacy;
-	@ElementCollection
-	@CollectionTable(name="tagphoto", joinColumns=@JoinColumn(name="photoId"))
-	@Column(name="tag")
+	@Column
+	private String date;
+	@ElementCollection//(fetch=FetchType.EAGER)
+	@CollectionTable(name="tagphoto", joinColumns = @JoinColumn(name = "photoId"))
+	//
+	//@OneToMany(cascade=CascadeType.ALL)
+	//@JoinTable(name = "tagphoto", joinColumns = {@JoinColumn(name = "photoId")})
+	@Column(name = "tag")
 	private List<String> tags;
-	@ElementCollection
-	@CollectionTable(name="allowedusers", joinColumns=@JoinColumn(name="photoId"))
-	@Column(name="allowedUser")
+	@ElementCollection//(fetch=FetchType.EAGER)
+	@CollectionTable(name = "allowedusers", joinColumns = @JoinColumn(name = "photoId"))
+	//
+	//@OneToMany(cascade=CascadeType.ALL)
+	//@JoinTable(name = "allowedusers", joinColumns = {@JoinColumn(name = "photoId")})
+	@Column(name = "allowedUser")
 	private List<String> allowedUsers;
-	
+
 	public Photo() {
 		// TODO Auto-generated constructor stub
 		this.title = null;
@@ -51,18 +61,31 @@ public class Photo {
 		this.tags = new ArrayList<>();
 		this.allowedUsers = new ArrayList<>();
 	}
-	
-	public Photo(String username, String title, String filepath, String privacy) {
+
+	public Photo(String username, String title, String filepath, String privacy, String date) {
 		// TODO Auto-generated constructor stub
 		this.username = username;
 		this.title = title;
 		this.description = null;
 		this.filepath = filepath;
 		this.privacy = privacy;
+		this.date = date;
 		this.tags = new ArrayList<>();
 		this.allowedUsers = new ArrayList<>();
 	}
-
+	
+	public Photo(String username, String title, String description, String filepath, String privacy, String date) {
+		// TODO Auto-generated constructor stub
+		this.username = username;
+		this.title = title;
+		this.description = description;
+		this.filepath = filepath;
+		this.privacy = privacy;
+		this.date = date;
+		this.tags = new ArrayList<>();
+		this.allowedUsers = new ArrayList<>();
+	}
+	
 	public int getPhotoId() {
 		return photoId;
 	}
@@ -111,6 +134,14 @@ public class Photo {
 		this.privacy = privacy;
 	}
 
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public List<String> getTags() {
 		return tags;
 	}
@@ -126,14 +157,43 @@ public class Photo {
 	public void setAllowedUsers(List<String> allowedUsers) {
 		this.allowedUsers = allowedUsers;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "Photo [photoId=" + photoId + ", username=" + username + ", title=" + title + ", description="
-				+ description + ", filepath=" + filepath + ", privacy=" + privacy + ", tags=" + tags + ", allowedUsers="
-				+ allowedUsers + "]";
+		return "[this.photoId=" + photoId + ", this.username='" + username + "', this.title='" + title + "', this.description='"
+				+ description + "', this.filepath='" + filepath + "', this.privacy='" + privacy + "', this.date='" + date + "', this.tags=" + toStringTags()
+				+ ", this.allowedUsers=" + toStringAllowedUsers() + "]";
 	}
 	
+	private String toStringTags() {
+		String str = "[";
+		for(int i = 0; i < tags.size(); i++) {
+			str += "'" + tags.get(i) + "'";
+			if(i + 1 < tags.size())
+				str += ", ";
+		}
+		str += "]";
+		return str;
+	}
 	
+	private String toStringAllowedUsers() {
+		String str = "[";
+		for(int i = 0; i < allowedUsers.size(); i++) {
+			str += "'" + allowedUsers.get(i) + "'";
+			if(i + 1 < allowedUsers.size())
+				str += ", ";
+		}
+		str += "]";
+		return str;
+	}
+
+	public void addTag(String tag) {
+		if(!tags.contains(tag))
+			tags.add(tag);
+	}
 	
+	public void addAllowedUser(String allowedUser) {
+		if(!allowedUser.contains(allowedUser))
+			allowedUsers.add(allowedUser);
+	}
 }
