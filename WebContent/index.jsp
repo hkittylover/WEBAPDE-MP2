@@ -13,7 +13,7 @@
             var root = 'https://jsonplaceholder.typicode.com';
             var allphotos = [];
             var photos_cnt = 0;
-            var numViewPhoto = 15;
+            var numViewPhoto = 5;
 
             function Photo(username, title, description, filepath, privacy, date, tags, allowedUsers) {
             	this.username = username;
@@ -34,16 +34,16 @@
 
                 var new_tab_title = document.createElement("div");
                 new_tab_title.className += "tab_title";
-                new_tab_title.textContent = photoObj[2];
+                new_tab_title.textContent = photoObj.title;
                 //new_div_tab_photo.className += "tab_photo";
 
                 //thumbnails
                 var new_thumb = document.createElement("img");
                 new_thumb.className += "thumbnail";
                 //new_thumb.setAttribute("src", photoObuserpage.htmlthumbnailUrl);
-                new_thumb.setAttribute("src", photoObj[4]);
+                new_thumb.setAttribute("src", photoObj.filepath);
                 a_photo.textContent = "";
-                a_photo.href = "#" + photoObj[0];
+                a_photo.href = "#" + photoObj.photoId;
 
                 // add thumbnail to div (image)
                 new_div_tab_photo.appendChild(new_thumb);
@@ -84,15 +84,32 @@
 				//  pList.push(photo);
 				//</c:forEach>
 				var i;
-            	for(i = 0; i < pList.length; i++) {
+				var limit = photos_cnt + numViewPhoto;
+            	for(i = photos_cnt; i < pList.length && i < limit; i++) {
             		showPhoto(pList[i]);
+            		photos_cnt++;
             	}
+            	
+                if (photos_cnt >= pList.length) {
+                    $("#viewmore").hide();
+                }
             }
-
+            
+            function findPhoto(pList, id) {
+            	for(i = 0; i < pList.length; i++) {
+            		if(pList[i].photoId == id) {
+            			console.log(pList[i]);
+            			return pList[i];
+            		}
+            		console.log("Hello");
+            	}
+            	return null;
+            }
+            
             function showImgModal() {
             	pList = ${pList};
-            	
-            	p = pList[parseInt(window.location.hash.slice(1)) - 1]
+            	var id = parseInt(window.location.hash.slice(1));
+            	p = findPhoto(pList, id);
             	console.log(parseInt(window.location.hash.slice(1)) - 1)
                 console.log("show the modal thing");
                 //console.log($(this).data());
@@ -111,19 +128,20 @@
                 var a_user = document.createElement("a");
                 var a_album = document.createElement("a");
 				
-                document.title = p[2] + " | Photos | Oink";
-                modal_caption.innerHTML = p[2];
-                modal_img.src = p[4];
+                document.title = p.title + " | Photos | Oink";
+                modal_caption.innerHTML = p.title;
+                modal_img.src = p.filepath;
                 
-                a_user.href = "userpage.html?id=" + p[1] + "#posts";
-                a_user.textContent = p[1];
+                a_user.href = "userpage.html?id=" + p.username + "#posts";
+                a_user.textContent = p.username;
                 modal_uploader.appendChild(a_user);
-				
+                
+                $("#imgcontainer").empty();
                 var new_img_tag = [];
-                for(i = 0; i < p[7].length; i++) {
+                for(i = 0; i < p.tags.length; i++) {
 	                new_img_tag.push(document.createElement("div"));
 	                new_img_tag[i].className += "imgtag";
-	                new_img_tag[i].textContent = "#" + p[7][i];
+	                new_img_tag[i].textContent = "#" + p.tags[i];
 	                $("#imgcontainer").append(new_img_tag[i]);
                 }
                 modal_thing.style.display = "table";
@@ -178,13 +196,15 @@
                 });
 
                 // on hash change, show photo
-                $(window).on('hashchange',function(){
+                $(window).on('hashchange',function(e){
+                	//e.preventDefault();
                     if(window.location.hash.slice(1) != "")
                         showImgModal();
                 });
 
                 // close modal on x button
-                $(document).on("click", ".close", function(){
+                $(document).on("click", ".close", function(e){
+                	//e.preventDefault();
                     console.log("close modal");
                     window.location.hash = "";
                     document.title = "Oink";
@@ -197,7 +217,8 @@
                 });
                 
                 // close modal after any click outside modal
-                $(window).on("click", function() {
+                $(window).on("click", function(e) {
+                	//e.preventDefault();
                     window.location.hash = "";
                     document.title = "Oink";
 
@@ -213,7 +234,8 @@
                     console.log("onclick: " + event.target);
                 });
 
-                $('a.hlink').click(function(){
+                $('a.hlink').click(function(e){
+                	//e.preventDefault();
                     console.log(event.target.text)
                     event.preventDefault(); 
                     var hlinklist = document.getElementsByClassName("hlink");
