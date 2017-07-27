@@ -16,14 +16,17 @@ public class UserService {
 		
 		// if the username already exist in the DB
 		if(isUserFound(u.getUsername())) {
-			System.out.println("BAKIT KA NANDITO");
+			System.out.println("From addUser(u): username already exist.");
 			return false;
 		}
+		
+		boolean b = false;
+		
 		try {
 			trans.begin();
 			em.persist(u);
 			trans.commit();
-			return true;
+			b = true;
 		} catch (Exception e) {
 			// TODO: handle exception
 			if(trans != null)
@@ -32,7 +35,7 @@ public class UserService {
 		} finally {
 			em.close();
 		}
-		return false;
+		return b;
 	}
 	
 	public static User getUser(String username, String password) {
@@ -48,14 +51,12 @@ public class UserService {
 			u = em.find(User.class, username);
 			trans.commit();
 			
-			if(u == null)
-				return u;
-			
-			// check if the password is equal
-			if(u.isPasswordEqual(password))
-				return u;
-			else
-				System.err.println("ERROR: Password does not match!");
+			if(u != null)
+				// check if the password is equal
+				if(!u.isPasswordEqual(password)) {
+					u = null;
+					System.err.println("ERROR: Password does not match!");
+				}
 				// System.out.println("ERROR: Password does not match!");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -75,6 +76,8 @@ public class UserService {
 		
 		EntityTransaction trans = em.getTransaction();
 		
+		boolean b = false;
+		
 		try {
 			trans.begin();
 			u = em.find(User.class, username);
@@ -82,7 +85,7 @@ public class UserService {
 			
 			// if the user is found
 			if(u != null)
-				return true;
+				b = true;
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -90,16 +93,16 @@ public class UserService {
 			em.close();
 		}
 		
-		return false;
+		return b;
 	}
 	
 	public static void main(String[] args) {
-		User u = new User("helloKitty", "Hay");
+		User u = new User("mae", "allyzahehe");
 		if(addUser(u))
 			System.out.println(u.toString());
 		else
 			System.out.println("ERROR");
 		
-		//System.out.println(getUser("helloKitty", "Hay"));
+		System.out.println(getUser("mae", "Hay"));
 	}
 }
