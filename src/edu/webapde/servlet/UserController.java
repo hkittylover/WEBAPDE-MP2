@@ -20,7 +20,7 @@ import edu.webapde.service.UserService;
 /**
  * Servlet implementation class UserController
  */
-@WebServlet(urlPatterns={"/login", "/register", "/logout"})
+@WebServlet(urlPatterns={"/mainpage", "/login", "/register", "/logout"})
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -49,6 +49,9 @@ public class UserController extends HttpServlet {
 		String urlPattern = request.getServletPath();
 		
 		switch (urlPattern) {
+		case "/mainpage":
+			goToMainpage(request, response);
+			break;
 		case "/login":
 			loginUser(request, response);
 			break;
@@ -61,6 +64,20 @@ public class UserController extends HttpServlet {
 		default:
 			break;
 		}
+	}
+	
+	private void goToMainpage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// find cookie for user
+		
+		// if not found go public
+		
+		System.out.println("AM I HERE???????????");
+		List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
+		request.setAttribute("pList", publicPhotoList);
+		request.setAttribute("pListSize", publicPhotoList.size());
+		
+		RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+		rd.forward(request, response);
 	}
 	
 	private void loginUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
