@@ -81,7 +81,7 @@ public class PhotoService {
 
 		try {
 			trans.begin();
-			String hql = "SELECT * FROM photo p, userphoto up, tagphoto tp WHERE p.photoId = up.photoId AND tp.photoId = p.photoId AND tp.tag = '" + tag + "';";
+			String hql = "SELECT * FROM photo p, userphoto up, tagphoto tp WHERE p.photoId = up.photoId AND tp.photoId = p.photoId AND tp.tag = '" + tag + "' ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
@@ -105,7 +105,7 @@ public class PhotoService {
 
 		try {
 			trans.begin();
-			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId;";
+			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
@@ -136,7 +136,7 @@ public class PhotoService {
 			// HQL (Hibernate query language)
 			// use createNativeQuery if SQL
 			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId and up.username = '"
-					+ username + "';";
+					+ username + "' ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
@@ -161,7 +161,7 @@ public class PhotoService {
 
 		try {
 			trans.begin();
-			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId AND privacy = 'public';";
+			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId AND privacy = 'public' ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();

@@ -160,9 +160,9 @@ public class Photo {
 	
 	@Override
 	public String toString() {
-		return "[this.photoId=" + photoId + ", this.username='" + username + "', this.title='" + title + "', this.description='"
-				+ description + "', this.filepath='" + filepath + "', this.privacy='" + privacy + "', this.date='" + date + "', this.tags=" + toStringTags()
-				+ ", this.allowedUsers=" + toStringAllowedUsers() + "]";
+		return "{'photoId':" + photoId + ", 'username':'" + username + "', 'title':'" + title + "', 'description':'"
+				+ description + "', 'filepath':'" + filepath + "', 'privacy':'" + privacy + "', 'date':'" + date + "', 'tags':" + toStringTags()
+				+ ", 'allowedUsers':" + toStringAllowedUsers() + "}";
 	}
 	
 	private String toStringTags() {
