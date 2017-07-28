@@ -108,12 +108,12 @@ public class UserService {
 	}
 	
 	public static void main(String[] args) {
-		User u = new User("mae", "allyzahehe");
+		User u = new User("Mae", "allyzaheh");
 		if(addUser(u))
 			System.out.println(u.toString());
 		else
 			System.out.println("ERROR");
 		
-		System.out.println(getUser("mae", "Hay"));
+		System.out.println(getUser("Mae", "allyzahehe"));
 	}
 }

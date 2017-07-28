@@ -1,11 +1,5 @@
 package edu.webapde.service;
 
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -25,9 +19,9 @@ public class PhotoService {
 
 		if (!UserService.isUserFound(p.getUsername()))
 			return false;
-		
+
 		boolean b = false;
-		
+
 		try {
 			trans.begin();
 			em.persist(p);
@@ -55,13 +49,14 @@ public class PhotoService {
 		try {
 			trans.begin();
 			/*
-			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId AND p.photoId = " + id + ";";
-			Query q = em.createNativeQuery(hql, Photo.class);
-			p = (Photo) q.getResultList().get(0);
-			*/
+			 * String hql =
+			 * "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId AND p.photoId = "
+			 * + id + ";"; Query q = em.createNativeQuery(hql, Photo.class); p =
+			 * (Photo) q.getResultList().get(0);
+			 */
 			p = em.find(Photo.class, id);
 			trans.commit();
-			System.out.println("Result from getPhotos(id): " + p.toString());
+			System.out.println("Result from getPhotos(id): " + p);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -81,11 +76,12 @@ public class PhotoService {
 
 		try {
 			trans.begin();
-			String hql = "SELECT * FROM photo p, userphoto up, tagphoto tp WHERE p.photoId = up.photoId AND tp.photoId = p.photoId AND tp.tag = '" + tag + "' ORDER BY p.photoId DESC;";
+			String hql = "SELECT * FROM photo p, tagphoto tp WHERE tp.photoId = p.photoId AND tp.tag = '" + tag
+					+ "' ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
-			System.out.println("Result from getPhotoByTag(tag): " + photoList.toString());
+			System.out.println("Result from getPhotoByTag(tag): " + photoList);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -105,11 +101,11 @@ public class PhotoService {
 
 		try {
 			trans.begin();
-			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId ORDER BY p.photoId DESC;";
+			String hql = "SELECT * FROM photo p ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
-			System.out.println("Result from getAllPhotos(): " + photoList.toString());
+			System.out.println("Result from getAllPhotos(): " + photoList);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -135,12 +131,11 @@ public class PhotoService {
 			trans.begin();
 			// HQL (Hibernate query language)
 			// use createNativeQuery if SQL
-			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId and up.username = '"
-					+ username + "' ORDER BY p.photoId DESC;";
+			String hql = "SELECT * FROM photo p WHERE p.username = '" + username + "' ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
-			System.out.println("Result from getAllPhotos(username): " + photoList.toString());
+			System.out.println("Result from getAllPhotos(username): " + photoList);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -150,7 +145,7 @@ public class PhotoService {
 
 		return photoList;
 	}
-	
+
 	public static List<Photo> getAllPublicPhotos() {
 		List<Photo> photoList = null;
 
@@ -161,11 +156,11 @@ public class PhotoService {
 
 		try {
 			trans.begin();
-			String hql = "SELECT * FROM photo p, userphoto up WHERE p.photoId = up.photoId AND privacy = 'public' ORDER BY p.photoId DESC;";
+			String hql = "SELECT * FROM photo p WHERE privacy = 'public' ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
-			System.out.println("Result from getAllPublicPhotos(): " + photoList.toString());
+			System.out.println("Result from getAllPublicPhotos(): " + photoList);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -199,18 +194,18 @@ public class PhotoService {
 		return b;
 	}
 
-	public static boolean addAllowedUserToPhoto(int photoId, String allowedUser) {
+	public static boolean addAllowedUserToPhoto(int photoId, String username) {
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
 		EntityManager em = emf.createEntityManager();
 
 		EntityTransaction trans = em.getTransaction();
 
 		boolean b = false;
-		
+
 		try {
 			trans.begin();
 			Photo p = em.find(Photo.class, photoId);
-			p.addAllowedUser(allowedUser);
+			p.addAllowedUser(username);
 			trans.commit();
 			b = true;
 		} catch (Exception e) {
@@ -231,7 +226,7 @@ public class PhotoService {
 		EntityTransaction trans = em.getTransaction();
 
 		boolean b = false;
-		
+
 		try {
 			trans.begin();
 			Photo p = em.find(Photo.class, photoId);
@@ -252,36 +247,37 @@ public class PhotoService {
 	public static void main(String[] args) {
 		/*
 		 * Photo p = new Photo("helloKitty1", "Yoho", "IAMFILEPHAT", "public");
-		 * if(addPhoto(p)) System.out.println(p.toString()); else
+		 * if(addPhoto(p)) System.out.println(p); else
 		 * System.out.println("ERROR");
 		 */
+
+		Photo photo = new Photo("mae", "StarDew", "A picture of the game.", "img/sv.png", "public", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
+		Photo photo2 = new Photo("mae", "Gentleman", "A picture of a POGI.", "img/j.jpg", "public", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
 		
-		//Photo photo = new Photo("mae", "StarDew", "A picture of the game.", "img/sv.png", "public", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
-		//Photo photo2 = new Photo("mae", "Gentleman", "A picture of a POGI.", "img/j.jpg", "public", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
-		
-		addTagsToPhoto(3, "Cute");
-		System.out.println(getPhoto(1).toString());
+		// addTagsToPhoto(3, "Cute");
+		System.out.println(getPhoto(1));
 		List<Photo> list = getAllPublicPhotos();
 		for (Photo p : list) {
-			System.out.println(p.toString());
+			System.out.println(p);
 		}
 		list = getAllPhotos();
 		for (Photo p : list) {
-			System.out.println(p.toString());
+			System.out.println(p);
 		}
 		list = getAllPhotos("mae");
 		for (Photo p : list) {
-			System.out.println(p.toString());
+			System.out.println(p);
 		}
-		list = getPhotosByTag("Hello1");
+		list = getPhotosByTag("Cute");
 		for (Photo p : list) {
-			System.out.println(p.toString());
+			System.out.println(p);
 		}
-		
-		
+
+		System.out.println(addPhoto(photo2));
+		System.out.println(addPhoto(photo));
 		
 		// addTagsToPhoto(1, "Hello1");
 		// System.out.println(getPhoto(1));
-		
+
 	}
 }
