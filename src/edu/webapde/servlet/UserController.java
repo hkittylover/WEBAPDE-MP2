@@ -20,7 +20,7 @@ import edu.webapde.service.UserService;
 /**
  * Servlet implementation class UserController
  */
-@WebServlet(urlPatterns = { "/mainpage", "/login", "/register", "/logout" })
+@WebServlet(urlPatterns = { "/homepage", "/login", "/register", "/logout" })
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -55,8 +55,8 @@ public class UserController extends HttpServlet {
 		System.out.println(urlPattern);
 		request.setAttribute("action", "none");
 		switch (urlPattern) {
-		case "/mainpage":
-			goToMainpage(request, response);
+		case "/homepage":
+			goToHomepage(request, response);
 			break;
 		case "/login":
 			request.setAttribute("action", "login");
@@ -75,7 +75,7 @@ public class UserController extends HttpServlet {
 		}
 	}
 
-	private void goToMainpage(HttpServletRequest request, HttpServletResponse response)
+	private void goToHomepage(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// find cookie for user
 		Cookie[] cookies = request.getCookies();
