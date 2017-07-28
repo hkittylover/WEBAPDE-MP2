@@ -160,10 +160,17 @@
 
             $(document).ready(function () {
             	var role = "${role}";
+            	var action = "${action}";
             	console.log(role);
+            	console.log("ACTION: ${action}");
+            	
+            	// adjust UI depending on the role
             	if(role == "user") {
             		console.log("I AM AN USER")
             		console.log("${sessionScope.sUsername} ");
+            		$("#hlink_login").hide();
+            		$("#hlink_reg").hide();
+            		$("#hlink_logout").show();
                 	getPhotos();
                 	var username = "${sessionScope.sUsername} ";
                 	var description = "${sessionScope.sDescription} ";
@@ -171,23 +178,35 @@
                 	
                 	// you can show the section for private photos
             	}
-            	// if login failed
-            	else if("${ERROR}" == "failed") {
-            		console.log("I AM STILL A GUEST")
-            		console.log("FAILED");
-                	getPhotos();
-                	
-                	// continue to show the modal of login but add a div inside to state that the username or password is incorrect
-                	
-            	}
             	else {
-            		console.log("I AM A GUEST")
-            		console.log("${sessionScope.sUsername} ");
-                	getPhotos();
-                	
-                	// show what is needed
-                	
-                	// hide what is needed
+            		$("#hlink_login").show();
+            		$("#hlink_reg").show();
+            		$("#hlink_logout").hide();
+	            	// check for action failures
+	            	if(action == "login") {
+	            		// if login failed
+	                	if("${ERROR}" == "failed") {
+	                		console.log("I AM STILL A GUEST")
+	                		console.log("LOGIN FAILED");
+	                		
+	                    	// continue to show the modal of login but add a div inside to state that the username or password is incorrect
+	                    	
+	                	}
+	            	}
+	            	
+	            	else if(action == "register") {
+	            		// if register failed
+	                	if("${ERROR}" == "failed") {
+	                		console.log("I AM STILL A GUEST")
+	                		console.log("REGISTER FAILED");
+	                		
+	                    	// continue to show the modal of register but add a div inside to state that the username or password is incorrect
+	                	}
+	            	}
+	            	var username = "${sessionScope.sUsername} ";
+                	var description = "${sessionScope.sDescription} ";
+                	console.log("USERNAME SESSION: " + username);
+	            	getPhotos();
             	}
                 // if address has non-empty hash, show equivalent modal
                 // if(window.location.hash.slice(1) != "") {
@@ -216,9 +235,11 @@
                     
                     var modal = document.getElementById("myModal");
                     var modallog = document.getElementById("modal-login");
+                    var modalreg = document.getElementById("modal-reg");
                     
                     modal.style.display='none';
                     modallog.style.display = 'none';
+                    modalreg.style.display = 'none';
                 });
                 
                 // close modal after any click outside modal
@@ -229,11 +250,14 @@
 
                     var modal = document.getElementById("myModal");
                     var modallog = document.getElementById("modal-login");
+                    var modalreg = document.getElementById("modal-reg");
                     var modalc = document.getElementById("modal-container");
                     var modalclog = document.getElementById("modal-login-container");
-                    if(event.target == modal || event.target == modalc || event.target == modallog || event.target == modalclog) {
+                    var modalcreg = document.getElementById("modal-reg-container");
+                    if(event.target == modal || event.target == modalc || event.target == modallog || event.target == modalclog || event.target == modalreg || event.target == modalcreg) {
                         modal.style.display = 'none';
                         modallog.style.display = 'none';
+                        modalreg.style.display = 'none';
                     }
 
                     console.log("onclick: " + event.target);
@@ -248,6 +272,13 @@
                         if(event.target.text == hlinklist[i].text && hlinklist[i].text == "Login") {
                             var modallog = document.getElementById("modal-login");
                             modallog.style.display = 'table';
+                        }
+                        if(event.target.text == hlinklist[i].text && hlinklist[i].text == "Register") {
+                            var modalreg = document.getElementById("modal-reg");
+                            modalreg.style.display = 'table';
+                        }
+                        if(event.target.text == hlinklist[i].text && hlinklist[i].text == "Logout") {
+                        	window.location.href="logout";
                         }
                     }
 
@@ -270,8 +301,9 @@
                 </form>
                 <!-- <a class="hlink" href="index.html">Search</a> -->
                 <!-- <a class="hlink" href="photos.html">Photos</a> -->
-                <a class="hlink" href="index.html">Login</a> 
-                <a class="hlink" href="index.html">Register</a> 
+                <a class="hlink" id="hlink_login" href="index.jsp">Login</a> 
+                <a class="hlink" id="hlink_reg" href="index.jsp">Register</a>
+                <a class="hlink" id="hlink_logout" href="logout">Logout</a> 
             </div>
         </div>
 
@@ -296,17 +328,7 @@
                                 <div id="imguploader"></div>
                                 <div id="imgalbum"></div>
                                 <div id="imgcontainer">
-                                <!-- 
-                                    <div class="imgtag">#pretty</div>
-                                    <div class="imgtag">#awesome</div>
-                                    <div class="imgtag">#blessed</div>
-                                    <div class="imgtag">#dogs</div>
-                                    <div class="imgtag">#dogs</div>
-                                    <div class="imgtag">#dogs</div>
-                                    <div class="imgtag">#dogs</div>
-                                    <div class="imgtag">#dogs</div>
-                                    <div class="imgtag">#dogs</div>
-                                    <div class="imgtag">#dogs</div>-->
+                                
                                 </div>
                             </div>
                         </div>
@@ -339,11 +361,13 @@
                     <div id="modal-reg-container">
                         <div id="modal-reg-container-2">
                             <div id="modal-reg-content">
-                                <h3>Log in</h3>
-                                <form action="login" method="POST">
-                                    <input type="text" name="username" placeholder="Username" /><br>
-                                    <input type="text" name="password" placeholder="Password" /><br>
-                                    <input type="submit" value="Log in" />
+                                <h3>Register</h3>
+                                <form id="register" action="register" method="POST">
+                                    <input type="text" name="username" placeholder="Username* (Alphanumeric characters only)" /><br>
+                                    <input type="password" name="password" placeholder="Password* (Must be at least 8 characters)" /><br>
+                                    <input type="password" name="confirmpassword" placeholder="Confirm Password *" /><br>
+                                    <textarea name="description" form="register" placeholder="Enter Brief Description (Optional)"></textarea><br>
+                                    <input type="submit" value="Register" />
                                 </form>
                             </div>
                         </div>

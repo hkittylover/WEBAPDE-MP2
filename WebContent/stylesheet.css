@@ -563,7 +563,7 @@ h5 {
 
 }
 
-#modal-login-container {
+#modal-login-container, #modal-reg-container {
     padding: 0;
     vertical-align: middle;
     display: table-cell;
@@ -571,27 +571,35 @@ h5 {
     font-size: 0;
 }
 
-#modal-login-container2 {
+#modal-login-container2, #modal-reg-container2 {
     margin: 0 auto;
     text-align: center;
     padding: 10px;
     overflow: hidden; 
 }
 
-#modal-login-content {
+#modal-login-content, #modal-reg-content {
     background-color: white;
     display: inline-block;
-    width: 350px;
     font-size: 14px;
     text-align: center;
     height: 100%;
     overflow: auto;
     margin: 0;
-    height: 250px;
     border-radius: 15px;
 }
 
-#modal-login-content h3 {
+#modal-reg-content {
+    width: 350px;
+    height: 350px;
+}
+
+#modal-login-content {
+    width: 350px;
+    height: 250px;
+}
+
+#modal-login-content h3, #modal-reg-content h3 {
     padding-top: 45px;
     padding-bottom: 10px;
     font-family: "Oswald", sans-serif;
@@ -710,7 +718,19 @@ form button {
     margin-right: 5px;
     color: darkslategrey;
 }
-
+textarea {
+	border: 0;
+    padding-right: 2em;
+    padding-left: 1em;
+    background-color: whitesmoke;
+    border-radius: 15px;
+    width: 250px;
+    height: 60px;
+    font-family: 'Open Sans', sans-serif;
+    outline: none;
+    resize: none;
+    /*box-sizing: border-box;*/
+}
 
 
 

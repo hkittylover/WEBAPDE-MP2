@@ -53,17 +53,21 @@ public class UserController extends HttpServlet {
 		// TODO Auto-generated method stub
 		String urlPattern = request.getServletPath();
 		System.out.println(urlPattern);
+		request.setAttribute("action", "none");
 		switch (urlPattern) {
 		case "/mainpage":
 			goToMainpage(request, response);
 			break;
 		case "/login":
+			request.setAttribute("action", "login");
 			loginUser(request, response);
 			break;
 		case "/register":
+			request.setAttribute("action", "register");
 			registerUser(request, response);
 			break;
 		case "/logout":
+			request.setAttribute("action", "logout");
 			logoutUser(request, response);
 			break;
 		default:
@@ -77,6 +81,7 @@ public class UserController extends HttpServlet {
 		Cookie[] cookies = request.getCookies();
 		String cookieValue1 = null;
 		String cookieValue2 = null;
+
 		if (cookies != null) {
 			for (Cookie c : cookies) {
 				// find cookie to check if remembered
@@ -102,12 +107,11 @@ public class UserController extends HttpServlet {
 				// set session for username
 				HttpSession session = request.getSession();
 				session.setAttribute("sUsername", username);
-				
 				session.setAttribute("sDescription", u.getDescription());
-				
+
 				// set attributes to request
 				request.setAttribute("user", u);
-				
+
 				request.setAttribute("username", username);
 
 				request.setAttribute("description", u.getDescription());
@@ -128,6 +132,10 @@ public class UserController extends HttpServlet {
 
 			// if not found go public
 			else {
+				HttpSession session = request.getSession();
+				session.setAttribute("sUsername", "");
+				session.setAttribute("sDescription", "");
+				
 				System.out.println("AM I HERE???????????");
 				List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 				request.setAttribute("publicPhotoList", publicPhotoList);
@@ -137,8 +145,7 @@ public class UserController extends HttpServlet {
 				RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 				rd.forward(request, response);
 			}
-		}
-		else {
+		} else {
 			System.out.println("cookie not found");
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
@@ -152,7 +159,7 @@ public class UserController extends HttpServlet {
 
 	private void loginUser(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		String username = request.getParameter("username");
+		String username = request.getParameter("username").toLowerCase();
 		String password = request.getParameter("password");
 		String remember = request.getParameter("remember");
 		System.out.println("CONTROLLER username: " + username);
@@ -164,6 +171,7 @@ public class UserController extends HttpServlet {
 			// set session for username
 			HttpSession session = request.getSession();
 			session.setAttribute("sUsername", username);
+			session.setAttribute("sDescription", u.getDescription());
 
 			// set attributes to request
 			request.setAttribute("username", username);
@@ -208,17 +216,18 @@ public class UserController extends HttpServlet {
 			// go to failed page or same page
 			System.out.println("FAILED TO LOG IN");
 			request.setAttribute("ERROR", "failed");
-			
+
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
-			
+
 			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 			rd.forward(request, response);
 		}
 	}
 
-	private void registerUser(HttpServletRequest request, HttpServletResponse response) {
-		String username = request.getParameter("username");
+	private void registerUser(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String username = request.getParameter("username").toLowerCase();
 		String password = request.getParameter("password");
 		String description = request.getParameter("description");
 
@@ -231,19 +240,67 @@ public class UserController extends HttpServlet {
 
 		// if the user registered successfully
 		if (flag) {
+			// set session for username
+			HttpSession session = request.getSession();
+			session.setAttribute("sUsername", username);
+			session.setAttribute("sDescription", u.getDescription());
 
+			// set attributes to request
+			request.setAttribute("username", username);
+
+			request.setAttribute("description", u.getDescription());
+
+			List<Photo> photoList = PhotoService.getAllPhotos(username);
+			request.setAttribute("pList", photoList);
+
+			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
+			request.setAttribute("publicPhotoList", publicPhotoList);
+
+			request.setAttribute("role", "user");
+			
+			String generatedStr = "";
+
+			for (int i = 0; i < password.length(); i++) {
+				generatedStr += password.toCharArray()[i];
+				if (i + 1 < password.length())
+					generatedStr += "@%g&#HDjm68ysc@%g&#HDjm6";
+			}
+
+			// create cookie
+			Cookie usernameCookie = new Cookie("oink", username);
+			Cookie passwordCookie = new Cookie("oinkoink", generatedStr);
+
+			response.addCookie(usernameCookie);
+			response.addCookie(passwordCookie);
+			
+			System.out.println("REGISTERED");
+			// forward to success page or page if success
+			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+			rd.forward(request, response);
 		}
 
 		// if the username exists or registered failed
 		else {
+			// go to failed page or same page
+			System.out.println("FAILED TO REGISTER");
+			request.setAttribute("ERROR", "failed");
 
+			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
+			request.setAttribute("publicPhotoList", publicPhotoList);
+
+			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+			rd.forward(request, response);
 		}
 	}
 
-	private void logoutUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void logoutUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		// kill cookie username
 		Cookie[] cookies = request.getCookies();
-
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("sUsername", "");
+		session.setAttribute("sDescription", "");
+		
 		for (Cookie c : cookies) {
 			// find username cookie and kill it
 			if (c.getName().equals("oink") || c.getName().equals("oinkoink")) {
@@ -252,8 +309,14 @@ public class UserController extends HttpServlet {
 				response.addCookie(c);
 			}
 		}
-
+		
+		List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
+		request.setAttribute("publicPhotoList", publicPhotoList);
+		
+		request.setAttribute("role", "guest");
+		
 		// redirect to non-logged in page
-		response.sendRedirect("index.html");
+		RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+		rd.forward(request, response);
 	}
 }
