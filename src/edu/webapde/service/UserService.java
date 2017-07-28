@@ -14,6 +14,8 @@ public class UserService {
 		
 		EntityTransaction trans = em.getTransaction();
 		
+		u.setUsername(u.getUsername().toLowerCase());
+		
 		// if the username already exist in the DB
 		if(isUserFound(u.getUsername())) {
 			System.out.println("From addUser(u): username already exist.");
@@ -52,7 +54,7 @@ public class UserService {
 		
 		try {
 			trans.begin();
-			u = em.find(User.class, username);
+			u = em.find(User.class, username.toLowerCase());
 			trans.commit();
 			
 			if(u != null) {
@@ -91,7 +93,7 @@ public class UserService {
 		
 		try {
 			trans.begin();
-			u = em.find(User.class, username);
+			u = em.find(User.class, username.toLowerCase());
 			trans.commit();
 			
 			// if the user is found
