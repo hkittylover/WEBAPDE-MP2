@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS `allowedusers`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `allowedusers` (
   `photoId` int(11) NOT NULL,
-  `allowedUser` varchar(255) DEFAULT NULL,
+  `username` varchar(255) DEFAULT NULL,
   KEY `FK6d9pa1qew1p33kiv9y1q66aut` (`photoId`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -54,8 +54,9 @@ CREATE TABLE `photo` (
   `filepath` varchar(255) DEFAULT NULL,
   `privacy` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
+  `username` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`photoId`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,7 +65,7 @@ CREATE TABLE `photo` (
 
 LOCK TABLES `photo` WRITE;
 /*!40000 ALTER TABLE `photo` DISABLE KEYS */;
-INSERT INTO `photo` VALUES (1,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew'),(2,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew'),(3,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of a POGI.','img/j.jpg','public','Gentleman'),(4,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew'),(5,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of a POGI.','img/j.jpg','public','Gentleman'),(6,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew'),(7,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of a POGI.','img/j.jpg','public','Gentleman');
+INSERT INTO `photo` VALUES (1,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew','mae'),(2,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of a POGI.','img/j.jpg','public','Gentleman','mae'),(3,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew','mae'),(4,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of a POGI.','img/j.jpg','public','Gentleman','mae'),(5,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew','mae'),(6,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of a POGI.','img/j.jpg','public','Gentleman','mae'),(7,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of a POGI.','img/j.jpg','public','Gentleman','mae'),(8,'Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)','A picture of the game.','img/sv.png','public','StarDew','mae');
 /*!40000 ALTER TABLE `photo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -88,7 +89,6 @@ CREATE TABLE `tagphoto` (
 
 LOCK TABLES `tagphoto` WRITE;
 /*!40000 ALTER TABLE `tagphoto` DISABLE KEYS */;
-INSERT INTO `tagphoto` VALUES (3,'Cute');
 /*!40000 ALTER TABLE `tagphoto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,30 +116,6 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES ('mae','','allyzahehe');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `userphoto`
---
-
-DROP TABLE IF EXISTS `userphoto`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `userphoto` (
-  `username` varchar(255) DEFAULT NULL,
-  `photoId` int(11) NOT NULL,
-  PRIMARY KEY (`photoId`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `userphoto`
---
-
-LOCK TABLES `userphoto` WRITE;
-/*!40000 ALTER TABLE `userphoto` DISABLE KEYS */;
-INSERT INTO `userphoto` VALUES ('mae',1),('mae',2),('mae',3),('mae',4),('mae',5),('mae',6),('mae',7);
-/*!40000 ALTER TABLE `userphoto` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -150,4 +126,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-28  1:42:22
+-- Dump completed on 2017-07-28 20:39:15
