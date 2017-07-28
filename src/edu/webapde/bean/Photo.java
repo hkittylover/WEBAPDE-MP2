@@ -142,7 +142,7 @@ public class Photo {
 	@Override
 	public String toString() {
 		return "{'photoId':" + photoId + ", 'username':'" + username + "', 'title':'" + title + "', 'description':'"
-				+ description + "', 'filepath':'" + filepath + "', 'privacy':'" + privacy + "', 'date':'" + date + "', 'tags':" + toStringTags()
+				+ description + "', 'filepath':'" + filepath + "', 'privacy':'" + privacy + "', 'date': new Date('" + date + "'), 'tags':" + toStringTags()
 				+ ", 'allowedUsers':" + toStringAllowedUsers() + "}";
 	}
 	
