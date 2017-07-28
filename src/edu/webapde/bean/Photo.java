@@ -3,29 +3,22 @@ package edu.webapde.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.SecondaryTable;
-import javax.persistence.SecondaryTables;
 
 @Entity(name = "photo")
-@SecondaryTables({ @SecondaryTable(name = "userphoto", foreignKey = @ForeignKey(name = "photoId")) })
+//@SecondaryTables({ @SecondaryTable(name = "userphoto", foreignKey = @ForeignKey(name = "photoId")) })
 public class Photo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int photoId;
-	@Column(table = "userphoto")
+	@Column//(table = "userphoto")
 	private String username;
 	@Column
 	private String title;
@@ -37,27 +30,21 @@ public class Photo {
 	private String privacy;
 	@Column
 	private String date;
-	@ElementCollection//(fetch=FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(name="tagphoto", joinColumns = @JoinColumn(name = "photoId"))
-	//
-	//@OneToMany(cascade=CascadeType.ALL)
-	//@JoinTable(name = "tagphoto", joinColumns = {@JoinColumn(name = "photoId")})
 	@Column(name = "tag")
 	private List<String> tags;
-	@ElementCollection//(fetch=FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(name = "allowedusers", joinColumns = @JoinColumn(name = "photoId"))
-	//
-	//@OneToMany(cascade=CascadeType.ALL)
-	//@JoinTable(name = "allowedusers", joinColumns = {@JoinColumn(name = "photoId")})
-	@Column(name = "allowedUser")
+	@Column(name = "username")
 	private List<String> allowedUsers;
 
 	public Photo() {
 		// TODO Auto-generated constructor stub
-		this.title = null;
-		this.description = null;
-		this.filepath = null;
-		this.privacy = null;
+		this.title = "";
+		this.description = "";
+		this.filepath = "";
+		this.privacy = "";
 		this.tags = new ArrayList<>();
 		this.allowedUsers = new ArrayList<>();
 	}
@@ -66,7 +53,7 @@ public class Photo {
 		// TODO Auto-generated constructor stub
 		this.username = username;
 		this.title = title;
-		this.description = null;
+		this.description = "";
 		this.filepath = filepath;
 		this.privacy = privacy;
 		this.date = date;
@@ -76,14 +63,8 @@ public class Photo {
 	
 	public Photo(String username, String title, String description, String filepath, String privacy, String date) {
 		// TODO Auto-generated constructor stub
-		this.username = username;
-		this.title = title;
+		this(username, title, filepath, privacy, date);
 		this.description = description;
-		this.filepath = filepath;
-		this.privacy = privacy;
-		this.date = date;
-		this.tags = new ArrayList<>();
-		this.allowedUsers = new ArrayList<>();
 	}
 	
 	public int getPhotoId() {
@@ -187,13 +168,27 @@ public class Photo {
 		return str;
 	}
 
-	public void addTag(String tag) {
-		if(!tags.contains(tag))
+	public boolean addTag(String tag) {
+		if(!containInList(tags, tag)) {
 			tags.add(tag);
+			return true;
+		}
+		return false;
 	}
 	
-	public void addAllowedUser(String allowedUser) {
-		if(!allowedUser.contains(allowedUser))
-			allowedUsers.add(allowedUser);
+	public boolean addAllowedUser(String username) {
+		if(!containInList(allowedUsers, username)) {
+			allowedUsers.add(username);
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean containInList(List<String> list, String str) {
+		for(String s : list) {
+			if(s.equalsIgnoreCase(str))
+				return true;
+		}
+		return false;
 	}
 }
