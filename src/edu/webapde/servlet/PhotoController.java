@@ -137,8 +137,43 @@ public class PhotoController extends HttpServlet {
 		
 	}
 	
-	private void uploadPhoto(HttpServletRequest request, HttpServletResponse response) {
+	private void uploadPhoto(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		String role = (String) session.getAttribute("role");
 		
+		String username = (String) session.getAttribute("sUsername");
+		String title = request.getParameter("title");
+		String description = request.getParameter("description");
+		String filepath = "img/" + request.getParameter("file");
+		String privacy = request.getParameter("selector");
+		String date = "";
+		String[] tags = request.getParameter("tags").split(", +");
+		String[] allowedUsers = request.getParameter("allowed").split(", +");
+		//new Photo(username, title, description, filepath, privacy, date)
+		
+		Photo p = new Photo(username, title, description, filepath, privacy, date);
+		
+		for(String t : tags) {
+			p.addTag(t);
+		}
+		
+		for(String u : allowedUsers) {
+			p.addAllowedUser(u);
+		}
+		
+		PhotoService.addPhoto(p);
+		
+		List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
+		request.setAttribute("publicPhotoList", publicPhotoList);
+		
+		List<Photo> sharedPhotoList = PhotoService.getAllSharedPhotos(username);
+		request.setAttribute("sharedPhotoList", sharedPhotoList);
+		
+		List<Photo> myPhotoList = PhotoService.getAllMyPhotos(username);
+		request.setAttribute("myPhotoList", myPhotoList);
+		
+		RequestDispatcher rd = request.getRequestDispatcher("userpage.jsp");
+		rd.forward(request, response);
 	}
 	
 	private void sharePhoto(HttpServletRequest request, HttpServletResponse response) {
