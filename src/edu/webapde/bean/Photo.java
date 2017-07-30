@@ -177,7 +177,7 @@ public class Photo {
 	}
 	
 	public boolean addAllowedUser(String username) {
-		if(!containInList(allowedUsers, username)) {
+		if(!containInList(allowedUsers, username) && !this.username.equalsIgnoreCase(username)) {
 			allowedUsers.add(username);
 			return true;
 		}
