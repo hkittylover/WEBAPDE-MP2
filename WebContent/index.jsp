@@ -109,7 +109,7 @@
                 modal_caption.innerHTML = p.title;
                 modal_img.src = p.filepath;
                 
-                a_user.href = "userpage.html?id=" + p.username + "#posts";
+                //a_user.href = "userpage.html?id=" + p.username + "#posts";
                 a_user.textContent = p.username;
                 modal_uploader.appendChild(a_user);
                 
@@ -295,9 +295,9 @@
                 <a id="hlogo" href="index.html">OINK</a>
             </div>
             <div id="hright">
-                <form action="" method="post" class="index-search-form" name="">
-                    <input name="search" type="text" placeholder="What are you looking for?">
-                    <button name="submit" class="" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                <form action="search" method="get" class="index-search-form" name="">
+                    <input name="keyword" type="text" placeholder="What are you looking for?">
+                    <button class="" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
                 <!-- <a class="hlink" href="index.html">Search</a> -->
                 <!-- <a class="hlink" href="photos.html">Photos</a> -->
