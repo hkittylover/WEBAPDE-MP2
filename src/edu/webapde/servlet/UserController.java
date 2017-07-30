@@ -78,6 +78,7 @@ public class UserController extends HttpServlet {
 	private void goToHomepage(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// find cookie for user
+		HttpSession session = request.getSession();
 		Cookie[] cookies = request.getCookies();
 		String cookieValue1 = null;
 		String cookieValue2 = null;
@@ -105,19 +106,16 @@ public class UserController extends HttpServlet {
 				User u = UserService.getUser(cookieValue1, password);
 
 				// set session for username
-				HttpSession session = request.getSession();
 				session.setAttribute("sUsername", username);
 				session.setAttribute("sDescription", u.getDescription());
-
+				session.setAttribute("role", "user");
+				
 				// set attributes to request
 				request.setAttribute("user", u);
 
 				request.setAttribute("username", username);
 
 				request.setAttribute("description", u.getDescription());
-
-				List<Photo> photoList = PhotoService.getAllPhotos(username);
-				request.setAttribute("pList", photoList);
 
 				List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 				request.setAttribute("publicPhotoList", publicPhotoList);
@@ -132,9 +130,9 @@ public class UserController extends HttpServlet {
 
 			// if not found go public
 			else {
-				HttpSession session = request.getSession();
 				session.setAttribute("sUsername", "");
 				session.setAttribute("sDescription", "");
+				session.setAttribute("role", "guest");
 				
 				System.out.println("AM I HERE???????????");
 				List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
@@ -147,6 +145,7 @@ public class UserController extends HttpServlet {
 			}
 		} else {
 			System.out.println("cookie not found");
+			session.setAttribute("role", "0");
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
 
@@ -159,6 +158,7 @@ public class UserController extends HttpServlet {
 
 	private void loginUser(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
+		HttpSession session = request.getSession();
 		String username = request.getParameter("username").toLowerCase();
 		String password = request.getParameter("password");
 		String remember = request.getParameter("remember");
@@ -169,17 +169,14 @@ public class UserController extends HttpServlet {
 		// if the user is found
 		if (u != null) {
 			// set session for username
-			HttpSession session = request.getSession();
 			session.setAttribute("sUsername", username);
 			session.setAttribute("sDescription", u.getDescription());
-
+			session.setAttribute("role", "user");
+			
 			// set attributes to request
 			request.setAttribute("username", username);
 
 			request.setAttribute("description", u.getDescription());
-
-			List<Photo> photoList = PhotoService.getAllPhotos(username);
-			request.setAttribute("pList", photoList);
 
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
@@ -213,6 +210,8 @@ public class UserController extends HttpServlet {
 
 		// if the user is not found or the password is wrong
 		else {
+			session.setAttribute("role", "guest");
+			
 			// go to failed page or same page
 			System.out.println("FAILED TO LOG IN");
 			request.setAttribute("ERROR", "failed");
@@ -220,13 +219,14 @@ public class UserController extends HttpServlet {
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
 
-			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+			RequestDispatcher rd = request.getRequestDispatcher("homepage");
 			rd.forward(request, response);
 		}
 	}
 
 	private void registerUser(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession session = request.getSession();
 		String username = request.getParameter("username").toLowerCase();
 		String password = request.getParameter("password");
 		String description = request.getParameter("description");
@@ -241,17 +241,14 @@ public class UserController extends HttpServlet {
 		// if the user registered successfully
 		if (flag) {
 			// set session for username
-			HttpSession session = request.getSession();
 			session.setAttribute("sUsername", username);
 			session.setAttribute("sDescription", u.getDescription());
-
+			session.setAttribute("role", "user");
+			
 			// set attributes to request
 			request.setAttribute("username", username);
 
 			request.setAttribute("description", u.getDescription());
-
-			List<Photo> photoList = PhotoService.getAllPhotos(username);
-			request.setAttribute("pList", photoList);
 
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
@@ -281,6 +278,8 @@ public class UserController extends HttpServlet {
 
 		// if the username exists or registered failed
 		else {
+			session.setAttribute("role", "guest");
+			
 			// go to failed page or same page
 			System.out.println("FAILED TO REGISTER");
 			request.setAttribute("ERROR", "failed");
@@ -300,6 +299,7 @@ public class UserController extends HttpServlet {
 		HttpSession session = request.getSession();
 		session.setAttribute("sUsername", "");
 		session.setAttribute("sDescription", "");
+		session.setAttribute("role", "guest");
 		
 		for (Cookie c : cookies) {
 			// find username cookie and kill it
