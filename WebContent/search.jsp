@@ -413,7 +413,7 @@
     <body>
         <div id="header">
             <div id="hleft">
-                <a id="hlogo" href="index.html">OINK</a>
+                <a id="hlogo" href="mainpage">OINK</a>
             </div>
             <div id="hright">
                 <form action="search" method="get" class="index-search-form" name="">
