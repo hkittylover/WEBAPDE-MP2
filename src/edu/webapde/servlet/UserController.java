@@ -20,7 +20,7 @@ import edu.webapde.service.UserService;
 /**
  * Servlet implementation class UserController
  */
-@WebServlet(urlPatterns = { "/homepage", "/login", "/register", "/logout" })
+@WebServlet(urlPatterns = { "/homepage", "/login", "/register", "/logout", "/userpage" })
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -69,6 +69,9 @@ public class UserController extends HttpServlet {
 		case "/logout":
 			request.setAttribute("action", "logout");
 			logoutUser(request, response);
+			break;
+		case "/userpage":
+			goToUserpage(request, response);
 			break;
 		default:
 			break;
@@ -317,6 +320,23 @@ public class UserController extends HttpServlet {
 		
 		// redirect to non-logged in page
 		RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+		rd.forward(request, response);
+	}
+	
+	private void goToUserpage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		HttpSession session = request.getSession();
+		String username = (String) session.getAttribute("sUsername");
+		
+		List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
+		request.setAttribute("publicPhotoList", publicPhotoList);
+		
+		List<Photo> sharedPhotoList = PhotoService.getAllSharedPhotos(username);
+		request.setAttribute("sharedPhotoList", sharedPhotoList);
+		
+		List<Photo> myPhotoList = PhotoService.getAllMyPhotos(username);
+		request.setAttribute("myPhotoList", myPhotoList);
+		
+		RequestDispatcher rd = request.getRequestDispatcher("userpage.jsp");
 		rd.forward(request, response);
 	}
 }
