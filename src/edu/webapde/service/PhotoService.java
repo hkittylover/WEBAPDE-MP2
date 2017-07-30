@@ -90,6 +90,81 @@ public class PhotoService {
 		}
 		return photoList;
 	}
+	
+	public static List<Photo> getPublicPhotosByTag(String tag) {
+		List<Photo> photoList = null;
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
+		EntityManager em = emf.createEntityManager();
+
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			trans.begin();
+			String hql = "SELECT * FROM photo p, tagphoto tp WHERE tp.photoId = p.photoId AND tp.tag = '" + tag
+					+ "' AND privacy = 'public' ORDER BY p.photoId DESC;";
+			Query q = em.createNativeQuery(hql, Photo.class);
+			photoList = q.getResultList();
+			trans.commit();
+			System.out.println("Result from getPublicPhotoByTag(tag): " + photoList);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+		return photoList;
+	}
+	
+	public static List<Photo> getSharedPhotosByTag(String tag, String username) {
+		List<Photo> photoList = null;
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
+		EntityManager em = emf.createEntityManager();
+
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			trans.begin();
+			String hql = "SELECT * FROM photo p, tagphoto tp, allowedusers a WHERE p.photoId = tp.photoId AND p.photoId = a.photoId AND tp.tag = '" + tag
+					+ "' AND a.username = '" + username + "' AND privacy = 'private' ORDER BY p.photoId DESC;";
+			Query q = em.createNativeQuery(hql, Photo.class);
+			photoList = q.getResultList();
+			trans.commit();
+			System.out.println("Result from getSharedPhotoByTag(tag): " + photoList);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+		return photoList;
+	}
+	
+	public static List<Photo> getMyPhotosByTag(String tag, String username) {
+		List<Photo> photoList = null;
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
+		EntityManager em = emf.createEntityManager();
+
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			trans.begin();
+			String hql = "SELECT * FROM photo p, tagphoto tp WHERE tp.photoId = p.photoId AND tp.tag = '" + tag
+					+ "' AND p.username = '" + username + "' ORDER BY p.photoId DESC;";
+			Query q = em.createNativeQuery(hql, Photo.class);
+			photoList = q.getResultList();
+			trans.commit();
+			System.out.println("Result from getMyPhotoByTag(tag): " + photoList);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+		return photoList;
+	}
 
 	public static List<Photo> getAllPhotos() {
 		List<Photo> photoList = null;
@@ -116,7 +191,37 @@ public class PhotoService {
 		return photoList;
 	}
 
-	public static List<Photo> getAllPhotos(String username) {
+	public static List<Photo> getAllSharedPhotos(String username) {
+		List<Photo> photoList = null;
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
+		EntityManager em = emf.createEntityManager();
+
+		EntityTransaction trans = em.getTransaction();
+
+		if (!UserService.isUserFound(username))
+			return null;
+
+		try {
+			trans.begin();
+			// HQL (Hibernate query language)
+			// use createNativeQuery if SQL
+			String hql = "SELECT * FROM photo p, allowedUsers a WHERE p.photoId = a.photoId AND a.username = '" + username + "' p.privacy = 'private' ORDER BY p.photoId DESC;";
+			Query q = em.createNativeQuery(hql, Photo.class);
+			photoList = q.getResultList();
+			trans.commit();
+			System.out.println("Result from getAllPhotos(username): " + photoList);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+
+		return photoList;
+	}
+	
+	public static List<Photo> getAllMyPhotos(String username) {
 		List<Photo> photoList = null;
 
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
@@ -251,20 +356,21 @@ public class PhotoService {
 		 * System.out.println("ERROR");
 		 */
 
-		Photo photo = new Photo("mae", "StarDew", "A picture of the game.", "img/sv.png", "public", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
-		Photo photo2 = new Photo("mae", "Gentleman", "A picture of a POGI.", "img/j.jpg", "public", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
+		Photo photo = new Photo("krizia", "Star", "A picture of the game.", "img/sv.png", "private", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
+		Photo photo2 = new Photo("krizia", "Pogiman", "A picture of a POGI.", "img/j.jpg", "private", "Thu Jul 27 2017 18:10:09 GMT+0800 (Malay Peninsula Standard Time)");
 		
 		// addTagsToPhoto(3, "Cute");
 		System.out.println(getPhoto(1));
 		List<Photo> list = getAllPublicPhotos();
 		for (Photo p : list) {
 			System.out.println(p);
+			addTagsToPhoto(p.getPhotoId(), "LOVE");
 		}
 		list = getAllPhotos();
 		for (Photo p : list) {
 			System.out.println(p);
 		}
-		list = getAllPhotos("mae");
+		list = getAllMyPhotos("mae");
 		for (Photo p : list) {
 			System.out.println(p);
 		}
@@ -272,9 +378,14 @@ public class PhotoService {
 		for (Photo p : list) {
 			System.out.println(p);
 		}
-
+		/*
 		System.out.println(addPhoto(photo2));
 		System.out.println(addPhoto(photo));
+		System.out.println(addAllowedUserToPhoto(9, "mae"));
+		System.out.println(addAllowedUserToPhoto(10, "mae"));
+		*/
+		//System.out.println(addTagsToPhoto(9, "Game"));
+		//System.out.println(addTagsToPhoto(10, "POGI"));
 		
 		// addTagsToPhoto(1, "Hello1");
 		// System.out.println(getPhoto(1));
