@@ -34,7 +34,7 @@
                 </script>
             <script>
                 var photos_cnt = 0;
-                var numViewPhoto = 5;
+                var numViewPhoto = 4;
 
                 function showPhoto(photoObj) {
                     var a_photo = document.createElement("a");
@@ -45,6 +45,11 @@
                     var new_tab_title = document.createElement("div");
                     new_tab_title.className = "tab_title";
                     new_tab_title.textContent = photoObj.title;
+                    var new_div_user = document.createElement("div");
+                    new_div_user.className = "tab_title tab_user";
+                    var a_user = document.createElement("a");
+                    a_user.href = "userpage?user=" + photoObj.username;
+                    a_user.textContent = photoObj.username;
                     //new_div_tab_photo.className = "tab_photo";
 
                     //thumbnails
@@ -58,7 +63,8 @@
                     // add thumbnail to div (image)
                     new_div_tab_photo.appendChild(new_thumb);
                     new_div_tab_photo.appendChild(new_tab_title);
-
+                    new_div_user.appendChild(a_user);
+                    new_div_tab_photo.appendChild(new_div_user);
                     // add link to div
                     a_photo.appendChild(new_div_tab_photo);
 
@@ -115,7 +121,7 @@
                     modal_caption.innerHTML = p.title;
                     modal_img.src = p.filepath;
                     modal_description.innerHTML = p.description;
-                    a_user.href = "userpage?id=" + p.username;
+                    a_user.href = "userpage?user=" + p.username;
                     a_user.textContent = p.username;
                     modal_uploader.appendChild(a_user);
 
@@ -158,7 +164,7 @@
                     modal_caption.innerHTML = p.title;
                     modal_img.src = p.filepath;
                     modal_description.innerHTML = p.description;
-                    a_user.href = "userpage?id=" + p.username;
+                    a_user.href = "userpage?user=" + p.username;
                     a_user.textContent = p.username;
                     modal_uploader.appendChild(a_user);
 
@@ -213,6 +219,10 @@
                 }
 
                 $(document).ready(function(){
+                	$("#hlink_login").hide();
+                    $("#hlink_reg").hide();
+                    $("#hlink_logout").hide();
+                    $("#profile").hide();
                 	history.replaceState('', document.title, "http://localhost:8080/WEBAPDE%20MP2/userpage?user=${username}");
                 	document.title = "${username}";
                     var role = "${sessionScope.role}";
@@ -516,12 +526,12 @@
 
                             if( fileName ) {
                                 $label.find( 'span' ).html( "<i class=\"fa fa-check-circle\" aria-hidden=\"true\"></i> " + fileName );
-                                $("#file").setAttribute("value", fileName);
+                                
                                 //$label.css('color', 'gray');
                             }
                             else {
                                 $label.html( labelVal );
-                                $("#file").setAttribute("value", fileName);
+                                
                             }
                         });
 
@@ -583,15 +593,28 @@
                     });
 
                     $('#form-upload').submit(function(event){
-                    	var $p_errors = $(this).find("p");
-                    	$($p_errors[0]).css('display', 'none');
-                    	var ext = $("file").val().split('.').pop().toLowerCase(); 
-                    	if(ext != "png" && ext != "jpg" && ext != "jpeg" && ext != "tiff") {
-                    		event.preventDefault();
-                    		$($p_errors[2]).css('display', 'block');
-                    	} else {
-                    		$($p_errors[2]).css('display', 'none');
-                    	}
+
+                        console.log("SUBMIT LOGIN");
+                        console.log($(this).find("input"));
+
+                        var $p_errors = $(this).find("p");
+                        var $input_title = $(this).find("input")[0];
+                        
+                        var b = true;
+                        
+	                    if($input_title.value.length > 0) {
+	                        console.log("upload success");
+	                        $($input_title).css('box-shadow', 'none');
+	                        $($p_errors[0]).css('display', 'none');
+	                    }
+	                    else {
+	                        console.log("upload failed");
+	                        event.preventDefault();
+	                        $($p_errors[0]).css('display', 'block');
+	                        $($input_title).css('box-shadow', '0 0 0 1pt rgba(252, 45, 45, 0.8)');
+	                        b = false;
+	                    }
+                        return b;
                     });
 
                     $('#form-reg').submit(function(event){
@@ -841,7 +864,7 @@
                                     <textarea rows="3" name="description" placeholder="Short description about the photo"></textarea><br>
                                     <input type="file" name="file" id="file" accept=".jpg, .png, .tiff" class="pic-input" />
                                     <label for="file"><span><i class="fa fa-upload" aria-hidden="true"></i> Choose a file...</label></span><br>
-									<p class="form-error">Invalid file type.</p>
+									<p class="form-error">Title needed.</p>
                                     <ul>
                                         <li>
                                             <input type="radio" id="f-option" name="selector" class="pic-security" value="public" checked="checked">

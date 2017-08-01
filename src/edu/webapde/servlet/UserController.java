@@ -272,8 +272,10 @@ public class UserController extends HttpServlet {
 			Cookie passwordCookie = new Cookie("oinkoink", generatedStr);
 
 			// if remember me is checked
-			if (remember != null && remember.equals("remember"))
+			if (remember != null && remember.equals("remember")) {
 				usernameCookie.setMaxAge(60 * 60 * 24 * 365 * 3);
+				passwordCookie.setMaxAge(60 * 60 * 24 * 365 * 3);
+			}
 
 			response.addCookie(usernameCookie);
 			response.addCookie(passwordCookie);

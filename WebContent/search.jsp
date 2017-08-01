@@ -16,19 +16,24 @@
                 var numViewPhoto = 5;
 
                 function showPhoto(photoObj, divAppend) {
-                    var a_photo = document.createElement("a");
+                	var a_photo = document.createElement("a");
 
                     var new_div_tab_photo = document.createElement("div");
-                    new_div_tab_photo.className += "tab_photo";
+                    new_div_tab_photo.className = "tab_photo";
 
                     var new_tab_title = document.createElement("div");
-                    new_tab_title.className += "tab_title";
+                    new_tab_title.className = "tab_title";
                     new_tab_title.textContent = photoObj.title;
-                    //new_div_tab_photo.className += "tab_photo";
+                    var new_div_user = document.createElement("div");
+                    new_div_user.className = "tab_title tab_user";
+                    var a_user = document.createElement("a");
+                    a_user.href = "userpage?user=" + photoObj.username;
+                    a_user.textContent = photoObj.username;
+                    //new_div_tab_photo.className = "tab_photo";
 
                     //thumbnails
                     var new_thumb = document.createElement("img");
-                    new_thumb.className += "thumbnail";
+                    new_thumb.className = "thumbnail";
                     //new_thumb.setAttribute("src", photoObuserpage.htmlthumbnailUrl);
                     new_thumb.setAttribute("src", photoObj.filepath);
                     a_photo.textContent = "";
@@ -37,7 +42,8 @@
                     // add thumbnail to div (image)
                     new_div_tab_photo.appendChild(new_thumb);
                     new_div_tab_photo.appendChild(new_tab_title);
-
+                    new_div_user.appendChild(a_user);
+                    new_div_tab_photo.appendChild(new_div_user);
                     // add link to div
                     a_photo.appendChild(new_div_tab_photo);
 
@@ -146,7 +152,7 @@
                     modal_caption.innerHTML = p.title;
                     modal_img.src = p.filepath;
                     modal_description.innerHTML = p.description;
-                    a_user.href = "userpage?id=" + p.username;
+                    a_user.href = "userpage?user=" + p.username;
                     a_user.textContent = p.username;
                     modal_uploader.appendChild(a_user);
 
@@ -189,7 +195,7 @@
                     modal_caption.innerHTML = p.title;
                     modal_img.src = p.filepath;
                     modal_description.innerHTML = p.description;
-                    a_user.href = "userpage?id=" + p.username;
+                    a_user.href = "userpage?user=" + p.username;
                     a_user.textContent = p.username;
                     modal_uploader.appendChild(a_user);
 
@@ -245,6 +251,10 @@
 
                 $(document).ready(function () {
                     //history.replaceState('', document.title, window.location.pathname + "?keyword=${keyword}");
+                    $("#hlink_login").hide();
+                    $("#hlink_reg").hide();
+                    $("#hlink_logout").hide();
+                    $("#profile").hide();
                     var role = "${sessionScope.role}";
                     var action = "${action}";
                     console.log(role);

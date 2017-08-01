@@ -85,7 +85,7 @@ a {
 	display: inline-block;
 	background-color: whitesmoke;
 	padding: 15px;
-	height: 175px;
+	height: 193px;
 	width: 150px;
 	margin: 15px;
 	border-radius: 8px;
@@ -100,12 +100,27 @@ a {
 	/* left: -1000%;
     right: -1000%; */
 	margin: auto;
-	top: 172px;
+	top: 174px;
 	width: 140px;
 	text-align: left;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+.tab_user {
+	position: absolute;
+	font-family: 'Open Sans', sans-serif;
+
+	margin: auto;
+	top: 192px;
+	width: 140px;
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: cornflowerblue;
+	font-size: 13px;
 }
 
 .tab_privacy {
@@ -423,7 +438,7 @@ ul, li {
 	border-bottom: solid cornflowerblue;
 }
 
-#nav-current {
+#nav-current, .nav-current {
 	border-bottom: solid cornflowerblue;
 	color: cornflowerblue;
 }
@@ -593,7 +608,7 @@ h5 {
 	font-weight: 700;
 }
 
-#modal-container-2 {
+#modal-container-2, #modal-ad-container-2 {
 	/*display: inline-block;*/
 	margin: 0 auto;
 	text-align: center;
@@ -601,11 +616,11 @@ h5 {
 	overflow: hidden;
 }
 
-#modal-container-2>* {
+#modal-container-2>*, #modal-ad-container-2 > * {
 	vertical-align: middle;
 }
 
-#modal-container {
+#modal-container, #modal-ad-container {
 	padding: 0;
 	vertical-align: middle;
 	display: table-cell;
@@ -613,7 +628,7 @@ h5 {
 	font-size: 0;
 }
 
-#modal-info-container {
+#modal-info-container, #modal-ad-info-container {
 	background-color: whitesmoke;
 	display: inline-block;
 	width: 400px;
@@ -938,6 +953,15 @@ input[type=radio]:checked ~ label {
 
 .results-viewmore:hover {
 	cursor: pointer;
+}
+
+
+#modal-error-msg {
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5em;
+    padding-top: 150px;
+    color:darkslategrey;
 }
 
 /* 

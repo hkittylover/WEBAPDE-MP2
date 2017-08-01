@@ -1,19 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-    <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-    <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-            <title>Home | Oink</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-            <script src="jquery-3.2.1.min.js"></script>
-            <link rel = "stylesheet" href = "stylesheet.css">
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Home | Oink</title>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="jquery-3.2.1.min.js"></script>
+<link rel="stylesheet" href="stylesheet.css">
 
-            <script>
+<script>
                 var root = 'https://jsonplaceholder.typicode.com';
                 var allphotos = [];
                 var photos_cnt = 0;
-                var numViewPhoto = 5;
+                var numViewPhoto = 8;
                 var currentnav = "public";
                 var ajxtext = "";
 
@@ -37,6 +38,11 @@
                     var new_tab_title = document.createElement("div");
                     new_tab_title.className = "tab_title";
                     new_tab_title.textContent = photoObj.title;
+                    var new_div_user = document.createElement("div");
+                    new_div_user.className = "tab_title tab_user";
+                    var a_user = document.createElement("a");
+                    a_user.href = "userpage?user=" + photoObj.username;
+                    a_user.textContent = photoObj.username;
                     //new_div_tab_photo.className = "tab_photo";
 
                     //thumbnails
@@ -50,7 +56,8 @@
                     // add thumbnail to div (image)
                     new_div_tab_photo.appendChild(new_thumb);
                     new_div_tab_photo.appendChild(new_tab_title);
-
+                    new_div_user.appendChild(a_user);
+                    new_div_tab_photo.appendChild(new_div_user);
                     // add link to div
                     a_photo.appendChild(new_div_tab_photo);
 
@@ -112,7 +119,7 @@
                     modal_caption.innerHTML = p.title;
                     modal_img.src = p.filepath;
                     modal_description.innerHTML = p.description;
-                    a_user.href = "userpage?id=" + p.username;
+                    a_user.href = "userpage?user=" + p.username;
                     a_user.textContent = p.username;
                     modal_uploader.appendChild(a_user);
 
@@ -155,7 +162,7 @@
                     modal_caption.innerHTML = p.title;
                     modal_img.src = p.filepath;
                     modal_description.innerHTML = p.description;
-                    a_user.href = "userpage?id=" + p.username;
+                    a_user.href = "userpage?user=" + p.username;
                     a_user.textContent = p.username;
                     modal_uploader.appendChild(a_user);
 
@@ -192,28 +199,45 @@
                     	$("#imgusercontainer").hide();
                     }
                 }
+                
+                function showErrModal() {
+                    console.log("show the error modal thing");
+
+                    //get value of id from the child div (which is id div)
+                    var modal_thing = document.getElementById("modal-access-deny");
+
+                    document.title = "Access denied | Photos | Oink";
+                    modal_thing.style.display = "table";
+                }
 
                 function closeModal() {
                     var modal = document.getElementById("myModal");
                     var modallog = document.getElementById("modal-login");
-                    // var modalap = document.getElementById("modal-add-photo");
                     var modalreg = document.getElementById("modal-reg");
+                    var modalad = document.getElementById("modal-access-deny");
 
                     modal.style.display = 'none';
                     modallog.style.display = 'none';
                     //modalap.style.display = 'none';
                     modalreg.style.display = 'none';
 					document.title = "Home | Oink";
+					modalad.style.display = 'none';
                     history.replaceState('', document.title, "http://localhost:8080/WEBAPDE%20MP2/homepage");
                 }
 
                 $(document).ready(function () {
+                    
+                	$("#hlink_login").hide();
+                    $("#hlink_reg").hide();
+                    $("#hlink_logout").hide();
+                    $("#profile").hide();
                     var search = window.location.search;
                     history.replaceState('', document.title, "http://localhost:8080/WEBAPDE%20MP2/homepage");
                     var role = "${role}";
                     var action = "${action}";
                     console.log(role);
                     console.log("ACTION: ${action}");
+                    
                     // adjust UI depending on the role
                     if(role == "user") {
                         console.log("I AM AN USER")
@@ -280,6 +304,8 @@
                             }
                             else {
                                 // no access
+                                console.log("i am here");
+                                showErrModal();
                             }
                             
                         });
@@ -453,6 +479,8 @@
                                 }
                                 else {
                                     // no access
+                                    showErrModal();
+                                    history.replaceState('', document.title, "http://localhost:8080/WEBAPDE%20MP2/photo?id=" + window.location.hash.slice(1));
                                 }
                                 
                             });
@@ -465,8 +493,10 @@
                             var navlinklist = document.getElementsByClassName("navlink");
                             $("#tab_con").empty();
                             getPhotos(${sharedPhotoList} );
-                            $("#nav-shared").className = "navlink nav-current";
-                            $("#nav-public").className = "navlink";
+                            var pubnav = document.getElementById("nav-public");
+                            var shanav = document.getElementById("nav-shared");
+                            shanav.className = "navlink nav-current";
+                            pubnav.className = "navlink";
                         }
                         else if(window.location.hash.slice(1) == "public") {
                             photos_cnt = 0;
@@ -475,8 +505,10 @@
                             var navlinklist = document.getElementsByClassName("navlink");
                             $("#tab_con").empty();
                             getPhotos(${publicPhotoList} );
-                            $("#nav-public").className = "navlink nav-current";
-                            $("#nav-shared").className = "navlink";
+                            var pubnav = document.getElementById("nav-public");
+                            var shanav = document.getElementById("nav-shared");
+                            pubnav.className = "navlink nav-current";
+                            shanav.className = "navlink";
                         }
                     });
 
@@ -505,8 +537,9 @@
                         //var modaladdphoto2 = document.getElementById("modal-add-photo-container-2");
                         var modalcreg = document.getElementById("modal-reg-container");
                         var modalcreg2 = document.getElementById("modal-reg-container-2");
+                        var modalcad = document.getElementById("modal-access-deny");
 
-                        if(event.target == modalc2 || event.target == modalc || event.target == modallog || event.target == modalclog || event.target == modalc2log || event.target == modalcreg || event.target == modalcreg2) {
+                        if(event.target == modalcad || event.target == modalc2 || event.target == modalc || event.target == modallog || event.target == modalclog || event.target == modalc2log || event.target == modalcreg || event.target == modalcreg2) {
                             closeModal();
                             window.location.hash = "";
                             document.title = "Oink";
@@ -649,134 +682,158 @@
                     });
                 });
             </script>
-            <title>Oink</title>
-        </head>
-        <body>
-            <div id="header">
-                <div id="hleft">
-                    <a id="hlogo" href="index.html">OINK</a>
-                </div>
+<title>Oink</title>
+</head>
+<body>
+	<div id="header">
+		<div id="hleft">
+			<a id="hlogo" href="index.html">OINK</a>
+		</div>
 
-                <div id="hright">
-                    <form action="search" method="get" class="index-search-form" name="">
-                        <input name="keyword" type="text" placeholder="What are you looking for?">
-                        <button class="" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                    </form>
-                    <a class="hlink" id="profile" href="userpage?user=${sessionScope.sUsername}">${sessionScope.sUsername}</a>
-                    <a class="hlink" id="hlink_login" href="login">Login</a> 
-                    <a class="hlink" id="hlink_reg" href="register">Register</a>
-                    <a class="hlink" id="hlink_logout" href="logout">Logout</a> 
-                </div>
-            </div>
-
-
-            <div id="bodypanel">
-                <div id="usercontentnav">
-                    <ul>
-                        <li><a class="navlink nav-current" href="#public" id="nav-public">Public Photos</a></li>
-                        <li><a class="navlink" href="#shared" id="nav-shared">Shared with me</a></li>
-                    </ul>
-                </div>
-                <div id="usercontent">
-                    <div class="tab_con" id="tab_con">
-
-                    </div>
-                </div>
-
-                <div id="myModal" class="modal">
-
-                    <span class="close" >&times;</span>
-                    <div id="modal-container">
-                        <div id="modal-container-2">
-                            <div id="modal-photo-container">
-                                <div id="modal-photo-center">
-                                    <img class="modal-content" id="modalimg" />
-                                </div>
-                            </div>    
-
-                            <div id="modal-info-container">
-                                <div id="caption"></div>
-                                <div id="imguploader"></div>
-                                <div id="imgalbum"></div>
-                                <div id="imgdescription"></div>
-                                <div id="imgcontainer">
-                                    Tags:
-                                    <div id="imgcontainer2">
-                                    </div>
-                                    <div class="imgtag" id="addtag"><i id="fa-addtag" class="fa fa-plus" aria-hidden="true"></i><span id="add-tag"></span></div>
-                                </div>
-								<div id="imgusercontainer">
-                                    Allowed users:
-                                    <div id="imgusercontainer2">
-                                    </div>
-                                    <div class="imgtag" id="adduser"><i id="fa-adduser" class="fa fa-plus" aria-hidden="true"></i><span id="add-user"></span></div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
+		<div id="hright">
+			<form action="search" method="get" class="index-search-form" name="">
+				<input name="keyword" type="text"
+					placeholder="What are you looking for?">
+				<button class="" type="submit">
+					<i class="fa fa-search" aria-hidden="true"></i>
+				</button>
+			</form>
+			<a class="hlink" id="profile"
+				href="userpage?user=${sessionScope.sUsername}">${sessionScope.sUsername}</a>
+			<a class="hlink" id="hlink_login" href="login">Login</a> <a
+				class="hlink" id="hlink_reg" href="register">Register</a> <a
+				class="hlink" id="hlink_logout" href="logout">Logout</a>
+		</div>
+	</div>
 
 
-                <div id="modal-login" class="modal">
+	<div id="bodypanel">
+		<div id="usercontentnav">
+			<ul>
+				<li><a class="navlink nav-current" href="#public" id="nav-public">Public Photos</a></li>
+				<li><a class="navlink" href="#shared" id="nav-shared">Shared
+						with me</a></li>
+			</ul>
+		</div>
+		<div id="usercontent">
+			<div class="tab_con" id="tab_con"></div>
+		</div>
 
-                    <span class="close" >&times;</span>
-                    <div id="modal-login-container">
-                        <div id="modal-login-container-2">
-                            <div id="modal-login-content">
-                                <h3>Log in</h3>
-                                <form action="login" method="get" id="form-login">
-                                    <input type="text" name="username" placeholder="Username"><br>
-                                    <input type="password" name="password" placeholder="Password"><br>
-                                    <p class="form-error">username or password is incorrect.</p>
-                                    <input type="checkbox" name="remember" value="remember" /> Remember Me<br>
-                                    <input type="submit" value="Log in">
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+		<div id="myModal" class="modal">
 
-                </div>
+			<span class="close">&times;</span>
+			<div id="modal-container">
+				<div id="modal-container-2">
+					<div id="modal-photo-container">
+						<div id="modal-photo-center">
+							<img class="modal-content" id="modalimg" />
+						</div>
+					</div>
 
-                <div id="modal-reg" class="modal">
+					<div id="modal-info-container">
+						<div id="caption"></div>
+						<div id="imguploader"></div>
+						<div id="imgalbum"></div>
+						<div id="imgdescription"></div>
+						<div id="imgcontainer">
+							Tags:
+							<div id="imgcontainer2"></div>
+							<div class="imgtag" id="addtag">
+								<i id="fa-addtag" class="fa fa-plus" aria-hidden="true"></i><span
+									id="add-tag"></span>
+							</div>
+						</div>
+						<div id="imgusercontainer">
+							Allowed users:
+							<div id="imgusercontainer2"></div>
+							<div class="imgtag" id="adduser">
+								<i id="fa-adduser" class="fa fa-plus" aria-hidden="true"></i><span
+									id="add-user"></span>
+							</div>
+						</div>
 
-                    <span class="close" >&times;</span>
-                    <div id="modal-reg-container">
-                        <div id="modal-reg-container-2">
-                            <div id="modal-reg-content">
-                                <h3>Register</h3>
-                                <form action="register" method="post" id="form-reg">
-                                    <input type="text" name="username" placeholder="Username"><br>
-                                    <input type="password" name="password" placeholder="Password"><br>
-                                    <input type="password" name="confirmpassword" placeholder="Confirm Password"><br>
-                                    <textarea rows="3" name="description" placeholder="Short description about yourself (optional)"></textarea><br>
-                                    <p class="form-error">Username should be at least 3 alphanumeric characters.</p>
-                                    <p class="form-error">Password should be at least 8 characters.</p>
-                                    <p class="form-error">Passwords do not match.</p>
-                                    <p class="form-error" id="usernameexist">Username already exist.</p>
-                                    <input type="submit" value="Register" id="submit-register">
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-            </div>
+		<div id="modal-login" class="modal">
 
-            </div>
-        <div id="footer">
-            <div id="viewmore">
-                View More...
-            </div>
-        </div>
+			<span class="close">&times;</span>
+			<div id="modal-login-container">
+				<div id="modal-login-container-2">
+					<div id="modal-login-content">
+						<h3>Log in</h3>
+						<form action="login" method="get" id="form-login">
+							<input type="text" name="username" placeholder="Username"><br>
+							<input type="password" name="password" placeholder="Password"><br>
+							<p class="form-error">username or password is incorrect.</p>
+							<input type="checkbox" name="remember" value="remember" />
+							Remember Me<br> <input type="submit" value="Log in">
+						</form>
+					</div>
+				</div>
+			</div>
 
-    </body>
+		</div>
+
+		<div id="modal-reg" class="modal">
+
+			<span class="close">&times;</span>
+			<div id="modal-reg-container">
+				<div id="modal-reg-container-2">
+					<div id="modal-reg-content">
+						<h3>Register</h3>
+						<form action="register" method="post" id="form-reg">
+							<input type="text" name="username" placeholder="Username"><br>
+							<input type="password" name="password" placeholder="Password"><br>
+							<input type="password" name="confirmpassword"
+								placeholder="Confirm Password"><br>
+							<textarea rows="3" name="description"
+								placeholder="Short description about yourself (optional)"></textarea>
+							<br>
+							<p class="form-error">Username should be at least 3
+								alphanumeric characters.</p>
+							<p class="form-error">Password should be at least 8
+								characters.</p>
+							<p class="form-error">Passwords do not match.</p>
+							<p class="form-error" id="usernameexist">Username already
+								exist.</p>
+							<input type="submit" value="Register" id="submit-register">
+						</form>
+					</div>
+				</div>
+			</div>
+
+			
+
+		</div>
+		<div id="modal-access-deny" class="modal">
+
+			<span class="close">&times;</span>
+			<div id="modal-ad-container">
+				<div id="modal-ad-container-2">
+					<div id="modal-ad-info-container">
+						<p id="modal-error-msg">
+							You are not allowed to view this photo.<br>Sorry. :(
+						</p>
+					</div>
+				</div>
+			</div>
+	
+		</div>
+
+
+
+
+	</div>
+
+	</div>
+	<div id="footer">
+		<div id="viewmore">View More...</div>
+	</div>
+
+</body>
 
 </html>
-
-
-<div style="display:flex;justify-content:center;align-items:center;width:400px;height:370px;">
-    <div></div>
-</div>
