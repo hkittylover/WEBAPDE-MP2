@@ -236,7 +236,7 @@ public class PhotoService {
 			trans.begin();
 			// HQL (Hibernate query language)
 			// use createNativeQuery if SQL
-			String hql = "SELECT * FROM photo p, allowedUsers a WHERE p.photoId = a.photoId AND p.username = '" + otherUsername + "' AND a.username = '" + username + "' ORDER BY p.photoId DESC;";
+			String hql = "SELECT * FROM photo p, allowedUsers a WHERE p.photoId = a.photoId AND p.username = '" + otherUsername + "' AND (a.username = '" + username + "' OR privacy = 'public') ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();
@@ -292,6 +292,31 @@ public class PhotoService {
 		try {
 			trans.begin();
 			String hql = "SELECT * FROM photo p WHERE privacy = 'public' ORDER BY p.photoId DESC;";
+			Query q = em.createNativeQuery(hql, Photo.class);
+			photoList = q.getResultList();
+			trans.commit();
+			System.out.println("Result from getAllPublicPhotos(): " + photoList);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+
+		return photoList;
+	}
+	
+	public static List<Photo> getAllPublicPhotos(String username) {
+		List<Photo> photoList = null;
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
+		EntityManager em = emf.createEntityManager();
+
+		EntityTransaction trans = em.getTransaction();
+
+		try {
+			trans.begin();
+			String hql = "SELECT * FROM photo p WHERE privacy = 'public' AND p.username = '" + username + "' ORDER BY p.photoId DESC;";
 			Query q = em.createNativeQuery(hql, Photo.class);
 			photoList = q.getResultList();
 			trans.commit();

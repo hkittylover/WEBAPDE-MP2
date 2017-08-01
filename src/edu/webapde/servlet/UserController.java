@@ -411,15 +411,24 @@ public class UserController extends HttpServlet {
 		HttpSession session = request.getSession();
 		String username = (String) session.getAttribute("sUsername");
 		String otherUser = request.getParameter("user");
-		
+		System.out.println(username);
+		System.out.println(otherUser);
 		if(username.equals(otherUser)) {
 			List<Photo> photoList = PhotoService.getAllMyPhotos(username);
 			request.setAttribute("photoList", photoList);
 			
 			request.setAttribute("username", username);
 			request.setAttribute("description", UserService.getUserDescription(username));
-		} else {
+		} else if(!username.equals("")){
 			List<Photo> photoList = PhotoService.getAllSharedPhotos(username, otherUser);
+			System.out.println(photoList);
+			request.setAttribute("photoList", photoList);
+			
+			request.setAttribute("username", otherUser);
+			request.setAttribute("description", UserService.getUserDescription(otherUser));
+		} else {
+			List<Photo> photoList = PhotoService.getAllPublicPhotos(otherUser);
+			System.out.println(photoList);
 			request.setAttribute("photoList", photoList);
 			
 			request.setAttribute("username", otherUser);
