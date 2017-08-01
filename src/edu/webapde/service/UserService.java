@@ -81,6 +81,39 @@ public class UserService {
 		return u;
 	}
 	
+	public static String getUserDescription(String username) {
+		User u = null;
+		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("mysqldb");
+		EntityManager em = emf.createEntityManager();
+		
+		EntityTransaction trans = em.getTransaction();
+		
+		String str = "";
+		
+		try {
+			trans.begin();
+			u = em.find(User.class, username.toLowerCase());
+			trans.commit();
+			
+			if(u != null) {
+				// check if the password is equal
+				str = u.getDescription();
+			}
+			else {
+				System.out.println("User not found...");
+			}
+				// System.out.println("ERROR: Password does not match!");
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+		
+		return str;
+	}
+	
 	public static boolean isUserFound(String username) {
 		User u = null;
 		

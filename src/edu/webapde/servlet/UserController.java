@@ -20,7 +20,7 @@ import edu.webapde.service.UserService;
 /**
  * Servlet implementation class UserController
  */
-@WebServlet(urlPatterns = { "/homepage", "/login", "/register", "/logout", "/userpage" })
+@WebServlet(urlPatterns = { "/homepage", "/login", "/register", "/logout", "/userpage", "/hasusername", "/verifyaccount" })
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -53,9 +53,14 @@ public class UserController extends HttpServlet {
 		// TODO Auto-generated method stub
 		String urlPattern = request.getServletPath();
 		System.out.println(urlPattern);
+		HttpSession session = request.getSession();
+		if(session.getAttribute("role") == null) {
+			checkRole(request, response);
+		}
 		request.setAttribute("action", "none");
 		switch (urlPattern) {
 		case "/homepage":
+			request.setAttribute("action", "homepage");
 			goToHomepage(request, response);
 			break;
 		case "/login":
@@ -71,10 +76,72 @@ public class UserController extends HttpServlet {
 			logoutUser(request, response);
 			break;
 		case "/userpage":
+			request.setAttribute("action", "userpage");
 			goToUserpage(request, response);
+			break;
+		case "/hasusername":
+			request.setAttribute("action", "hasusername");
+			hasUsername(request, response);
+			break;
+		case "/verifyaccount":
+			request.setAttribute("action", "verifyaccount");
+			verifyAccount(request, response);
 			break;
 		default:
 			break;
+		}
+	}
+	
+
+	private void checkRole(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession();
+		Cookie[] cookies = request.getCookies();
+		String cookieValue1 = null;
+		String cookieValue2 = null;
+		
+		if (cookies != null) {
+			for (Cookie c : cookies) {
+				// find cookie to check if remembered
+				if (c.getName().equals("oink")) {
+					// get the value
+					cookieValue1 = c.getValue();
+				} else if (c.getName().equals("oinkoink")) {
+					// get the value
+					cookieValue2 = c.getValue();
+				}
+			}
+
+			// if there is cookie
+			if (cookieValue1 != null && cookieValue2 != null) {
+				String username = cookieValue1;
+				String password = "";
+				String[] arr = cookieValue2.split("@%g&#HDjm68ysc@%g&#HDjm6");
+				for (int i = 0; i < arr.length; i++) {
+					password += arr[i];
+				}
+				User u = UserService.getUser(cookieValue1, password);
+
+				// set session for username
+				session.setAttribute("sUsername", username);
+				session.setAttribute("sDescription", u.getDescription());
+				session.setAttribute("role", "user");
+
+				System.out.println("LOGGED IN");
+			}
+
+			// if not found go public
+			else {
+				session.setAttribute("sUsername", "");
+				session.setAttribute("sDescription", "");
+				session.setAttribute("role", "guest");
+				
+				System.out.println("AM I HERE???????????");
+			}
+		} else {
+			System.out.println("cookie not found");
+			session.setAttribute("role", "0");
+			session.setAttribute("sUsername", "");
+			session.setAttribute("sDescription", "");
 		}
 	}
 
@@ -122,6 +189,9 @@ public class UserController extends HttpServlet {
 
 				List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 				request.setAttribute("publicPhotoList", publicPhotoList);
+				
+				List<Photo> sharedPhotoList = PhotoService.getAllSharedPhotos(username);
+				request.setAttribute("sharedPhotoList", sharedPhotoList);
 
 				request.setAttribute("role", "user");
 
@@ -140,7 +210,8 @@ public class UserController extends HttpServlet {
 				System.out.println("AM I HERE???????????");
 				List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 				request.setAttribute("publicPhotoList", publicPhotoList);
-
+				
+				request.setAttribute("sharedPhotoList", "[]");
 				request.setAttribute("role", "guest");
 
 				RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
@@ -151,7 +222,7 @@ public class UserController extends HttpServlet {
 			session.setAttribute("role", "0");
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
-
+			request.setAttribute("sharedPhotoList", "[]");
 			request.setAttribute("role", "0");
 
 			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
@@ -183,6 +254,8 @@ public class UserController extends HttpServlet {
 
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
+			List<Photo> sharedPhotoList = PhotoService.getAllSharedPhotos(username);
+			request.setAttribute("sharedPhotoList", sharedPhotoList);
 
 			request.setAttribute("role", "user");
 
@@ -221,6 +294,8 @@ public class UserController extends HttpServlet {
 
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
+			
+			request.setAttribute("sharedPhotoList", "[]");
 
 			RequestDispatcher rd = request.getRequestDispatcher("homepage");
 			rd.forward(request, response);
@@ -255,6 +330,9 @@ public class UserController extends HttpServlet {
 
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
+			
+			List<Photo> sharedPhotoList = PhotoService.getAllSharedPhotos(username);
+			request.setAttribute("sharedPhotoList", sharedPhotoList);
 
 			request.setAttribute("role", "user");
 			
@@ -289,6 +367,8 @@ public class UserController extends HttpServlet {
 
 			List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 			request.setAttribute("publicPhotoList", publicPhotoList);
+			
+			request.setAttribute("sharedPhotoList", "[]");
 
 			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 			rd.forward(request, response);
@@ -316,6 +396,8 @@ public class UserController extends HttpServlet {
 		List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
 		request.setAttribute("publicPhotoList", publicPhotoList);
 		
+		request.setAttribute("sharedPhotoList", "[]");
+		
 		request.setAttribute("role", "guest");
 		
 		// redirect to non-logged in page
@@ -326,17 +408,46 @@ public class UserController extends HttpServlet {
 	private void goToUserpage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession session = request.getSession();
 		String username = (String) session.getAttribute("sUsername");
+		String otherUser = request.getParameter("user");
 		
-		List<Photo> publicPhotoList = PhotoService.getAllPublicPhotos();
-		request.setAttribute("publicPhotoList", publicPhotoList);
-		
-		List<Photo> sharedPhotoList = PhotoService.getAllSharedPhotos(username);
-		request.setAttribute("sharedPhotoList", sharedPhotoList);
-		
-		List<Photo> myPhotoList = PhotoService.getAllMyPhotos(username);
-		request.setAttribute("myPhotoList", myPhotoList);
+		if(username.equals(otherUser)) {
+			List<Photo> photoList = PhotoService.getAllMyPhotos(username);
+			request.setAttribute("photoList", photoList);
+			
+			request.setAttribute("username", username);
+			request.setAttribute("description", UserService.getUserDescription(username));
+		} else {
+			List<Photo> photoList = PhotoService.getAllSharedPhotos(username, otherUser);
+			request.setAttribute("photoList", photoList);
+			
+			request.setAttribute("username", otherUser);
+			request.setAttribute("description", UserService.getUserDescription(otherUser));
+		}
+			
 		
 		RequestDispatcher rd = request.getRequestDispatcher("userpage.jsp");
 		rd.forward(request, response);
+	}
+	
+	private void hasUsername(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String username = request.getParameter("username");
+
+		boolean b = UserService.isUserFound(username);
+
+		String bool = String.valueOf(b);
+
+		response.getWriter().write(bool);
+	}
+	
+	private void verifyAccount(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+
+		User u = UserService.getUser(username, password);
+
+		if(u != null)
+			response.getWriter().write(String.valueOf(true));
+		else
+			response.getWriter().write(String.valueOf(false));
 	}
 }

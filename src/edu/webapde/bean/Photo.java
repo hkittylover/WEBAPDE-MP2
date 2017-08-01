@@ -141,15 +141,15 @@ public class Photo {
 	
 	@Override
 	public String toString() {
-		return "{'photoId':" + photoId + ", 'username':'" + username + "', 'title':'" + title + "', 'description':'"
-				+ description + "', 'filepath':'" + filepath + "', 'privacy':'" + privacy + "', 'date': new Date('" + date + "'), 'tags':" + toStringTags()
-				+ ", 'allowedUsers':" + toStringAllowedUsers() + "}";
+		return "{\"photoId\":" + photoId + ", \"username\":\"" + username + "\", \"title\":\"" + title + "\", \"description\":\""
+				+ description + "\", \"filepath\":\"" + filepath + "\", \"privacy\":\"" + privacy + "\", \"date\": \"\", \"tags\":" + toStringTags()
+				+ ", \"allowedUsers\":" + toStringAllowedUsers() + "}";
 	}
 	
 	private String toStringTags() {
 		String str = "[";
 		for(int i = 0; i < tags.size(); i++) {
-			str += "'" + tags.get(i) + "'";
+			str += "\"" + tags.get(i) + "\"";
 			if(i + 1 < tags.size())
 				str += ", ";
 		}
@@ -160,7 +160,7 @@ public class Photo {
 	private String toStringAllowedUsers() {
 		String str = "[";
 		for(int i = 0; i < allowedUsers.size(); i++) {
-			str += "'" + allowedUsers.get(i) + "'";
+			str += "\"" + allowedUsers.get(i) + "\"";
 			if(i + 1 < allowedUsers.size())
 				str += ", ";
 		}
@@ -169,7 +169,7 @@ public class Photo {
 	}
 
 	public boolean addTag(String tag) {
-		if(!containInList(tags, tag)) {
+		if(!containInList(tags, tag) && !tag.equals("")) {
 			tags.add(tag);
 			return true;
 		}
@@ -177,7 +177,7 @@ public class Photo {
 	}
 	
 	public boolean addAllowedUser(String username) {
-		if(!containInList(allowedUsers, username) && !this.username.equalsIgnoreCase(username)) {
+		if(!containInList(allowedUsers, username) && !this.username.equalsIgnoreCase(username) && !username.equals("")) {
 			allowedUsers.add(username);
 			return true;
 		}

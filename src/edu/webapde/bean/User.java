@@ -86,7 +86,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "{'username':'" + username + "', 'password':'" + Arrays.toString(password) + "', 'description':'" + description + "'}";
+		return "{\"username\":\"" + username + "\", \"password\":\"" + Arrays.toString(password) + "\", \"description\":\"" + description + "\"}";
 	}
 	
 }
